@@ -1,0 +1,31 @@
+@"
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Java / Maven
+backend/target/
+**/target/
+
+# Node / Angular
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+.metals/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+"@ | Set-Content .gitignore
