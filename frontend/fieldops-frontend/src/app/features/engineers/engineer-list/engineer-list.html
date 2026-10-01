@@ -1,0 +1,98 @@
+<section class="engineer-list-page">
+  <div class="header">
+    <div>
+      <h1>Engineers</h1>
+      <p>Manage field engineers and their availability.</p>
+    </div>
+
+    <button type="button" (click)="createEngineer()">
+      + Add Engineer
+    </button>
+  </div>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search name, email or location"
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
+
+    <select
+      [(ngModel)]="specializationFilter"
+      (change)="applyFilters()">
+
+      <option value="">All specializations</option>
+
+      @for (specialization of getSpecializations(); track specialization) {
+        <option [value]="specialization">
+          {{ specialization }}
+        </option>
+      }
+    </select>
+
+    <select
+      [(ngModel)]="availabilityFilter"
+      (change)="applyFilters()">
+
+      <option value="">All availability</option>
+
+      @for (availability of getAvailabilityOptions(); track availability) {
+        <option [value]="availability">
+          {{ availability }}
+        </option>
+      }
+    </select>
+
+    <button type="button" (click)="clearFilters()">
+      Clear
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p>Loading engineers...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    @if (filteredEngineers().length === 0) {
+      <p>No engineers found.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Specialization</th>
+            <th>Location</th>
+            <th>Availability</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (engineer of filteredEngineers(); track engineer.id) {
+            <tr>
+              <td>{{ engineer.id }}</td>
+              <td>{{ engineer.name }}</td>
+              <td>{{ engineer.email }}</td>
+              <td>{{ engineer.specialization }}</td>
+              <td>{{ engineer.location }}</td>
+              <td>{{ engineer.availability }}</td>
+              <td>
+                <button
+                  type="button"
+                  (click)="viewEngineer(engineer.id)">
+                  View
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

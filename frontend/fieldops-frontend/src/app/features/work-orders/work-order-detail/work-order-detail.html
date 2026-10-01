@@ -1,0 +1,119 @@
+<section class="work-order-detail-page">
+  <button type="button" (click)="back()">← Back to Work Orders</button>
+
+  @if (loading()) {
+    <p>Loading work order...</p>
+  } @else if (workOrder(); as wo) {
+    <h1>Work Order #{{ wo.id }}</h1>
+
+    @if (success()) {
+      <p class="success">{{ success() }}</p>
+    }
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <dl class="details">
+      <dt>Equipment ID</dt>
+      <dd>{{ wo.equipmentId }}</dd>
+
+      <dt>Engineer</dt>
+      <dd>
+        @if (wo.engineerId) {
+          @for (engineer of engineers(); track engineer.id) {
+            @if (engineer.id === wo.engineerId) {
+              {{ engineer.name }}
+            }
+          }
+        } @else {
+          Unassigned
+        }
+      </dd>
+
+      <dt>Priority</dt>
+      <dd>{{ wo.priority }}</dd>
+
+      <dt>Status</dt>
+      <dd>{{ wo.status }}</dd>
+
+      <dt>Description</dt>
+      <dd>{{ wo.description }}</dd>
+
+      <dt>Created</dt>
+      <dd>{{ wo.createdAt | date:'medium' }}</dd>
+
+      <dt>Due date</dt>
+      <dd>{{ wo.dueDate ? (wo.dueDate | date:'medium') : 'No due date' }}</dd>
+
+      <dt>Completed</dt>
+      <dd>{{ wo.completedAt ? (wo.completedAt | date:'medium') : '—' }}</dd>
+    </dl>
+
+    @if (canAssignEngineer()) {
+      <div class="action-card">
+        <h2>Assign engineer</h2>
+
+        <select
+          name="engineerId"
+          [(ngModel)]="engineerId">
+
+          <option [ngValue]="null">
+            Select engineer
+          </option>
+
+          @for (engineer of engineers(); track engineer.id) {
+            <option [ngValue]="engineer.id">
+              {{ engineer.name }} — {{ engineer.specialization }}
+            </option>
+          }
+        </select>
+
+        <button
+          type="button"
+          [disabled]="saving() || engineerId === null"
+          (click)="assignEngineer()">
+          {{ wo.engineerId ? 'Reassign' : 'Assign' }}
+        </button>
+      </div>
+    }
+
+    @if (canUpdateStatus()) {
+      <div class="action-card">
+        <h2>Update status</h2>
+
+        <select
+          name="status"
+          [(ngModel)]="selectedStatus">
+
+          @for (status of getAvailableStatuses(); track status) {
+            <option [value]="status">
+              {{ status }}
+            </option>
+          }
+        </select>
+
+        <button
+          type="button"
+          [disabled]="saving()"
+          (click)="changeStatus()">
+          Update
+        </button>
+      </div>
+    }
+
+    @if (wo.status === 'COMPLETED') {
+      <div class="terminal-message">
+        This work order has been completed.
+      </div>
+    }
+
+    @if (wo.status === 'CANCELLED') {
+      <div class="terminal-message">
+        This work order has been cancelled.
+      </div>
+    }
+  } @else {
+    <p class="error">{{ error() }}</p>
+  }
+</section>

@@ -1,0 +1,119 @@
+<section class="work-order-form-page">
+
+  <button type="button" (click)="cancel()">
+    ← Back to Work Orders
+  </button>
+
+  <h1>Create Work Order</h1>
+  <p>Raise a new maintenance task for a piece of equipment.</p>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (loadingEquipment() || loadingEngineers()) {
+    <p>Loading form data...</p>
+  } @else {
+    <form (ngSubmit)="submit()">
+
+      <div class="form-group">
+        <label for="equipmentId">Equipment</label>
+
+        <select
+          id="equipmentId"
+          name="equipmentId"
+          [(ngModel)]="form.equipmentId"
+          required>
+
+          <option [ngValue]="null">
+            Select equipment
+          </option>
+
+          @for (item of equipmentList(); track item.id) {
+            <option [ngValue]="item.id">
+              {{ item.name }} — {{ item.location }} — {{ item.status }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="engineerId">Engineer</label>
+
+        <select
+          id="engineerId"
+          name="engineerId"
+          [(ngModel)]="form.engineerId">
+
+          <option [ngValue]="null">
+            Unassigned
+          </option>
+
+          @for (engineer of engineers(); track engineer.id) {
+            <option [ngValue]="engineer.id">
+              {{ engineer.name }} — {{ engineer.specialization }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Priority</label>
+
+        <select
+          id="priority"
+          name="priority"
+          [(ngModel)]="form.priority"
+          required>
+
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+          <option value="CRITICAL">Critical</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          [(ngModel)]="form.description"
+          placeholder="Describe the maintenance task..."
+          required>
+        </textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="dueDate">Due date</label>
+
+        <input
+          id="dueDate"
+          name="dueDate"
+          type="datetime-local"
+          [(ngModel)]="form.dueDate">
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          [disabled]="saving()">
+          {{ saving() ? 'Creating...' : 'Create Work Order' }}
+        </button>
+
+        <button
+          type="button"
+          [disabled]="saving()"
+          (click)="cancel()">
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+  }
+
+</section>

@@ -1,0 +1,69 @@
+<section class="engineer-detail-page">
+  <button type="button" (click)="back()">
+    ← Back to Engineers
+  </button>
+
+  @if (loading()) {
+    <p>Loading engineer...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading() && engineer(); as engineer) {
+    <div class="header">
+      <div>
+        <h1>{{ engineer.name }}</h1>
+        <p>{{ engineer.email }}</p>
+      </div>
+
+      <span class="availability">
+        {{ engineer.availability }}
+      </span>
+    </div>
+
+    <div class="details">
+      <div>
+        <strong>Engineer ID</strong>
+        <span>{{ engineer.id }}</span>
+      </div>
+
+      <div>
+        <strong>User ID</strong>
+        <span>{{ engineer.userId }}</span>
+      </div>
+
+      <div>
+        <strong>Name</strong>
+        <span>{{ engineer.name }}</span>
+      </div>
+
+      <div>
+        <strong>Email</strong>
+        <span>{{ engineer.email }}</span>
+      </div>
+
+      <div>
+        <strong>Specialization</strong>
+        <span>{{ engineer.specialization }}</span>
+      </div>
+
+      <div>
+        <strong>Location</strong>
+        <span>{{ engineer.location }}</span>
+      </div>
+
+      <div>
+        <strong>Availability</strong>
+        <span>{{ engineer.availability }}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="edit()">
+        Edit Engineer
+      </button>
+    </div>
+  }
+</section>

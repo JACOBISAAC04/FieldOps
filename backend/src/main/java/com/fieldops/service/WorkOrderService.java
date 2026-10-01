@@ -91,9 +91,10 @@ public class WorkOrderService {
         WorkOrder workOrder = findWorkOrder(workOrderId);
         Engineer engineer = findEngineer(engineerId);
 
-        if (!"OPEN".equals(workOrder.getStatus())) {
+        if (!"OPEN".equals(workOrder.getStatus()) &&
+            !"ASSIGNED".equals(workOrder.getStatus())) {
             throw new IllegalStateException(
-                    "Engineer can only be assigned to an OPEN work order"
+                "Engineer can only be assigned to an OPEN or ASSIGNED work order"
             );
         }
 

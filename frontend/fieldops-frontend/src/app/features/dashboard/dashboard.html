@@ -1,0 +1,128 @@
+<section class="dashboard-page">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Overview of equipment, work orders and field engineers.</p>
+    </div>
+
+    <button type="button" (click)="loadDashboard()">
+      Refresh
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="loading">Loading dashboard...</p>
+  }
+
+  @if (error()) {
+    <div class="error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (!loading() && summary(); as data) {
+
+    <section class="dashboard-section">
+
+      <div class="section-header">
+        <h2>Equipment</h2>
+        <button type="button" (click)="openEquipment()">
+          View Equipment
+        </button>
+      </div>
+
+      <div class="card-grid">
+
+        <div class="metric-card">
+          <span class="metric-label">Total Equipment</span>
+          <strong>{{ data.totalEquipment }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Operational</span>
+          <strong>{{ data.operationalEquipment }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Maintenance Required</span>
+          <strong>{{ data.maintenanceRequiredEquipment }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Maintenance Due</span>
+          <strong>{{ data.maintenanceDueEquipment }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Deactivated</span>
+          <strong>{{ data.deactivatedEquipment }}</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="dashboard-section">
+
+      <div class="section-header">
+        <h2>Work Orders</h2>
+        <button type="button" (click)="openWorkOrders()">
+          View Work Orders
+        </button>
+      </div>
+
+      <div class="card-grid">
+
+        <div class="metric-card">
+          <span class="metric-label">Total Work Orders</span>
+          <strong>{{ data.totalWorkOrders }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Open</span>
+          <strong>{{ data.openWorkOrders }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">High Priority</span>
+          <strong>{{ data.highPriorityWorkOrders }}</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="dashboard-section">
+
+      <div class="section-header">
+        <h2>Engineers</h2>
+        <button type="button" (click)="openEngineers()">
+          View Engineers
+        </button>
+      </div>
+
+      <div class="card-grid">
+
+        <div class="metric-card">
+          <span class="metric-label">Available</span>
+          <strong>{{ data.availableEngineers }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Busy</span>
+          <strong>{{ data.busyEngineers }}</strong>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Unavailable</span>
+          <strong>{{ data.unavailableEngineers }}</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+  }
+
+</section>

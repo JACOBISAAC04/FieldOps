@@ -1,0 +1,116 @@
+<section class="engineer-form-page">
+
+  <button type="button" (click)="cancel()">
+    ← Back to Engineers
+  </button>
+
+  <h1>{{ editing ? 'Edit Engineer' : 'Create Engineer' }}</h1>
+
+  @if (loading()) {
+    <p>Loading engineer...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (success()) {
+    <p class="success">{{ success() }}</p>
+  }
+
+  @if (!loading()) {
+    <form (ngSubmit)="save()">
+
+      <div class="form-group">
+        <label for="userId">User</label>
+
+        @if (loadingUsers()) {
+            <p>Loading available users...</p>
+        }
+
+        @if (!loadingUsers()) {
+            <select
+            id="userId"
+            name="userId"
+            [(ngModel)]="userId"
+            [disabled]="editing">
+
+            <option [ngValue]="null">
+                Select a user
+            </option>
+
+            @for (user of availableUsers(); track user.id) {
+                <option [ngValue]="user.id">
+                {{ user.name }} - {{ user.email }}
+                </option>
+            }
+            </select>
+        }
+        </div>
+
+      <div class="form-group">
+        <label for="specialization">
+          Specialization
+        </label>
+
+        <input
+          id="specialization"
+          name="specialization"
+          type="text"
+          [(ngModel)]="specialization"
+          placeholder="e.g. Mechanical Maintenance">
+      </div>
+
+      <div class="form-group">
+        <label for="location">
+          Location
+        </label>
+
+        <input
+          id="location"
+          name="location"
+          type="text"
+          [(ngModel)]="location"
+          placeholder="e.g. Kerala">
+      </div>
+
+      <div class="form-group">
+        <label for="availability">
+          Availability
+        </label>
+
+        <select
+          id="availability"
+          name="availability"
+          [(ngModel)]="availability">
+
+          @for (option of availabilityOptions; track option) {
+            <option [value]="option">
+              {{ option }}
+            </option>
+          }
+
+        </select>
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          [disabled]="saving()">
+          {{ saving() ? 'Saving...' : (editing ? 'Update Engineer' : 'Create Engineer') }}
+        </button>
+
+        <button
+          type="button"
+          [disabled]="saving()"
+          (click)="cancel()">
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+  }
+
+</section>

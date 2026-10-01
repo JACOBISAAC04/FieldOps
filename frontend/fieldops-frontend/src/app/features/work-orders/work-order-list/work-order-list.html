@@ -1,0 +1,128 @@
+<div class="work-order-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Work Orders</h1>
+      <p>Manage maintenance tasks and work orders.</p>
+    </div>
+
+    <button type="button" (click)="createWorkOrder()">
+      Create Work Order
+    </button>
+  </div>
+
+  <div class="filters">
+
+    <select
+      [value]="statusFilter()"
+      (change)="onStatusChange($any($event.target).value)">
+      <option value="">All Statuses</option>
+      <option value="OPEN">Open</option>
+      <option value="ASSIGNED">Assigned</option>
+      <option value="IN_PROGRESS">In Progress</option>
+      <option value="COMPLETED">Completed</option>
+      <option value="CANCELLED">Cancelled</option>
+    </select>
+
+    <select
+      [value]="priorityFilter()"
+      (change)="onPriorityChange($any($event.target).value)">
+      <option value="">All Priorities</option>
+      <option value="LOW">Low</option>
+      <option value="MEDIUM">Medium</option>
+      <option value="HIGH">High</option>
+      <option value="CRITICAL">Critical</option>
+    </select>
+
+    <button type="button" (click)="clearFilters()">
+      Clear
+    </button>
+
+  </div>
+
+  <div *ngIf="loading()" class="state">
+    Loading work orders...
+  </div>
+
+  <div *ngIf="!loading() && error()" class="state error">
+    {{ error() }}
+  </div>
+
+  <div
+    *ngIf="!loading() && !error() && filteredWorkOrders().length === 0"
+    class="state">
+    No work orders found.
+  </div>
+
+  <div
+    *ngIf="!loading() && !error() && filteredWorkOrders().length > 0"
+    class="table-container">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Equipment</th>
+          <th>Engineer</th>
+          <th>Priority</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Due Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let workOrder of filteredWorkOrders()">
+
+          <td>
+            #{{ workOrder.id }}
+          </td>
+
+          <td>
+            {{ getEquipmentName(workOrder.equipmentId) }}
+          </td>
+
+          <td>
+            {{ getEngineerName(workOrder.engineerId) }}
+          </td>
+
+          <td>
+            {{ workOrder.priority }}
+          </td>
+
+          <td>
+            {{ workOrder.description }}
+          </td>
+
+          <td>
+            <span class="status">
+              {{ workOrder.status }}
+            </span>
+          </td>
+
+          <td>
+            {{ workOrder.dueDate
+              ? (workOrder.dueDate | date:'mediumDate')
+              : 'No due date' }}
+          </td>
+
+          <td>
+            <button
+              type="button"
+              (click)="viewDetails(workOrder.id)">
+              View
+            </button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
