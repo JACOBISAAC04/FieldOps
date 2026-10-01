@@ -1,5 +1,6 @@
 package com.fieldops.controller;
 
+
 import com.fieldops.dto.EquipmentRequest;
 import com.fieldops.dto.EquipmentResponse;
 import com.fieldops.service.EquipmentService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/equipment")
 public class EquipmentController {
 

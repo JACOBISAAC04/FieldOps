@@ -1,0 +1,75 @@
+.equipment-page {
+  padding: 32px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0;
+}
+
+p {
+  color: #666;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+}
+
+.error {
+  color: #c62828;
+}
+.maintenance-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.maintenance-banner span {
+  flex: 1;
+}
+
+.maintenance-banner button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}

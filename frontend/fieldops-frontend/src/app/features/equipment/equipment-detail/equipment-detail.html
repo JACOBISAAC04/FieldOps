@@ -1,0 +1,69 @@
+<section class="equipment-detail-page">
+  <a routerLink="/equipment">← Back to Equipment</a>
+
+  @if (loading()) {
+    <p>Loading equipment...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading() && equipment()) {
+    <div class="header">
+      <div>
+        <h1>{{ equipment()!.name }}</h1>
+        <p>{{ equipment()!.type }}</p>
+      </div>
+
+      <span class="status">{{ equipment()!.status }}</span>
+    </div>
+
+    <div class="details">
+      <div>
+        <strong>ID</strong>
+        <span>{{ equipment()!.id }}</span>
+      </div>
+
+      <div>
+        <strong>Name</strong>
+        <span>{{ equipment()!.name }}</span>
+      </div>
+
+      <div>
+        <strong>Type</strong>
+        <span>{{ equipment()!.type }}</span>
+      </div>
+
+      <div>
+        <strong>Location</strong>
+        <span>{{ equipment()!.location }}</span>
+      </div>
+
+      <div>
+        <strong>Status</strong>
+        <span>{{ equipment()!.status }}</span>
+      </div>
+
+      <div>
+        <strong>Installation Date</strong>
+        <span>{{ equipment()!.installationDate }}</span>
+      </div>
+
+      <div>
+        <strong>Next Maintenance</strong>
+        <span>{{ equipment()!.nextMaintenanceDate || 'Not scheduled' }}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a [routerLink]="['/equipment', equipment()!.id, 'edit']">
+        Edit Equipment
+      </a>
+
+      <button type="button" (click)="deactivate()">
+        Deactivate Equipment
+      </button>
+    </div>
+  }
+</section>

@@ -1,0 +1,101 @@
+<section class="equipment-form-page">
+  <a routerLink="/equipment">← Back to Equipment</a>
+
+  @if (editing()) {
+    <h1>Edit Equipment</h1>
+    <p>Update the equipment record.</p>
+  } @else {
+    <h1>Add Equipment</h1>
+    <p>Create a new equipment record.</p>
+  }
+
+  @if (loading()) {
+    <p>Loading equipment...</p>
+  }
+
+  @if (success()) {
+    <p class="success">{{ success() }}</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading()) {
+    <form (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          [(ngModel)]="form.name"
+          required
+          maxlength="150">
+      </div>
+
+      <div class="form-group">
+        <label for="type">Type</label>
+        <input
+          id="type"
+          name="type"
+          type="text"
+          [(ngModel)]="form.type"
+          required
+          maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input
+          id="location"
+          name="location"
+          type="text"
+          [(ngModel)]="form.location"
+          required
+          maxlength="150">
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select
+          id="status"
+          name="status"
+          [(ngModel)]="form.status">
+          <option value="OPERATIONAL">Operational</option>
+          <option value="MAINTENANCE_REQUIRED">Maintenance Required</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="installationDate">Installation Date</label>
+        <input
+          id="installationDate"
+          name="installationDate"
+          type="date"
+          [(ngModel)]="form.installationDate"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="nextMaintenanceDate">Next Maintenance Date</label>
+        <input
+          id="nextMaintenanceDate"
+          name="nextMaintenanceDate"
+          type="date"
+          [(ngModel)]="form.nextMaintenanceDate">
+      </div>
+
+      <button type="submit" [disabled]="saving()">
+        @if (saving()) {
+          Saving...
+        } @else if (editing()) {
+          Update Equipment
+        } @else {
+          Create Equipment
+        }
+      </button>
+    </form>
+  }
+</section>

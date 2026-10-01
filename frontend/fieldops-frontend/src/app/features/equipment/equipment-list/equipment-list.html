@@ -1,0 +1,101 @@
+<section class="equipment-page">
+  <div class="page-header">
+    <div>
+      <h1>Equipment</h1>
+      <p>Manage field equipment and maintenance status.</p>
+    </div>
+  </div>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search by name"
+      [(ngModel)]="nameFilter">
+
+    <input
+      type="text"
+      placeholder="Filter by status"
+      [(ngModel)]="statusFilter">
+
+    <input
+      type="text"
+      placeholder="Filter by type"
+      [(ngModel)]="typeFilter">
+
+    <input
+      type="text"
+      placeholder="Filter by location"
+      [(ngModel)]="locationFilter">
+
+    <button type="button" (click)="loadEquipment()">
+      Search
+    </button>
+
+    <button type="button" (click)="clearFilters()">
+      Clear
+    </button>
+
+    <button type="button" (click)="loadMaintenanceDue()">
+      Maintenance Due
+    </button>
+  </div>
+
+  @if (maintenanceDue()) {
+    <div class="maintenance-banner">
+      <strong>Maintenance Due</strong>
+      <span>Showing equipment that requires maintenance.</span>
+
+      <button type="button" (click)="loadEquipment()">
+        Show All Equipment
+      </button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p>Loading equipment...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    @if (equipment().length === 0) {
+      <p>No equipment found.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Installation Date</th>
+            <th>Next Maintenance</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of equipment(); track item.id) {
+            <tr>
+              <td>{{ item.id }}</td>
+
+              <td>
+                <a [routerLink]="['/equipment', item.id]">
+                  {{ item.name }}
+                </a>
+              </td>
+
+              <td>{{ item.type }}</td>
+              <td>{{ item.location }}</td>
+              <td>{{ item.status }}</td>
+              <td>{{ item.installationDate }}</td>
+              <td>{{ item.nextMaintenanceDate || 'Not scheduled' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>
