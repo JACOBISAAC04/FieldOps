@@ -19,41 +19,40 @@
       <span class="status">{{ equipment()!.status }}</span>
     </div>
 
-    <div class="details">
-      <div>
-        <strong>ID</strong>
-        <span>{{ equipment()!.id }}</span>
+    <div class="risk-card">
+      <div class="risk-header">
+        <h2>Equipment Risk</h2>
       </div>
 
-      <div>
-        <strong>Name</strong>
-        <span>{{ equipment()!.name }}</span>
-      </div>
+      @if (riskLoading()) {
+        <p>Loading risk assessment...</p>
+      } @else if (riskError()) {
+        <p class="error">{{ riskError() }}</p>
+      } @else if (risk()) {
+        <div class="risk-details">
+          <div>
+            <strong>Risk Level</strong>
+            <span>{{ risk()!.riskLevel }}</span>
+          </div>
 
-      <div>
-        <strong>Type</strong>
-        <span>{{ equipment()!.type }}</span>
-      </div>
+          <div>
+            <strong>Maintenance Due</strong>
+            <span>{{ risk()!.maintenanceDue ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
 
-      <div>
-        <strong>Location</strong>
-        <span>{{ equipment()!.location }}</span>
-      </div>
+        @if (risk()!.reasons.length > 0) {
+          <div class="risk-reasons">
+            <strong>Reasons</strong>
 
-      <div>
-        <strong>Status</strong>
-        <span>{{ equipment()!.status }}</span>
-      </div>
-
-      <div>
-        <strong>Installation Date</strong>
-        <span>{{ equipment()!.installationDate }}</span>
-      </div>
-
-      <div>
-        <strong>Next Maintenance</strong>
-        <span>{{ equipment()!.nextMaintenanceDate || 'Not scheduled' }}</span>
-      </div>
+            <ul>
+              @for (reason of risk()!.reasons; track reason) {
+                <li>{{ reason }}</li>
+              }
+            </ul>
+          </div>
+        }
+      }
     </div>
 
     <div class="actions">

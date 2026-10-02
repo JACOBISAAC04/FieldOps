@@ -46,4 +46,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+    @ExceptionHandler(AnalyticsServiceException.class)
+    public ResponseEntity<Map<String, Object>> handleAnalyticsServiceException(
+            AnalyticsServiceException exception) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.SERVICE_UNAVAILABLE.value());
+        response.put("error", "Analytics Service Unavailable");
+        response.put("message", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(response);
+    }
 }

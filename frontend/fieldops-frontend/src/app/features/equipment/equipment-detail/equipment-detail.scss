@@ -67,3 +67,43 @@ a {
   cursor: pointer;
   font-size: 14px;
 }
+.risk-card {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.risk-header h2 {
+  margin: 0 0 16px;
+}
+
+.risk-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.risk-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.risk-details span {
+  font-weight: 600;
+}
+
+.risk-reasons {
+  margin-top: 20px;
+}
+
+.risk-reasons ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.risk-reasons li {
+  margin-bottom: 6px;
+}

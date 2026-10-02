@@ -149,6 +149,14 @@ public class WorkOrderService {
                 .map(workOrderMapper::toResponse)
                 .toList();
     }
+    @Transactional(readOnly = true)
+    public boolean hasHighPriorityActiveWorkOrder(Long equipmentId) {
+        return workOrderRepository.existsByEquipmentIdAndPriorityInAndStatusIn(
+                equipmentId,
+                List.of("HIGH", "CRITICAL"),
+                List.of("OPEN", "ASSIGNED", "IN_PROGRESS")
+        );
+   }
 
     @Transactional(readOnly = true)
     public List<WorkOrderResponse> getByEngineer(Long engineerId) {

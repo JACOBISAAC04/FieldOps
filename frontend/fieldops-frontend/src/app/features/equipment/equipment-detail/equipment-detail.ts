@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentService } from '../../../core/services/equipment.service';
-
+import { EquipmentRisk } from '../../../core/models/equipment-risk.model';
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
@@ -16,8 +16,11 @@ export class EquipmentDetail implements OnInit {
   private equipmentService = inject(EquipmentService);
 
   equipment = signal<Equipment | null>(null);
+  risk = signal<EquipmentRisk | null>(null);
   loading = signal(true);
   error = signal('');
+  riskLoading = signal(true);
+  riskError = signal('');
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -36,6 +39,17 @@ export class EquipmentDetail implements OnInit {
       error: () => {
         this.error.set('Unable to load equipment.');
         this.loading.set(false);
+      }
+    });
+
+    this.equipmentService.getEquipmentRisk(id).subscribe({
+      next: (data) => {
+        this.risk.set(data);
+        this.riskLoading.set(false);
+      },
+      error: () => {
+        this.riskError.set('Unable to load equipment risk.');
+        this.riskLoading.set(false);
       }
     });
   }

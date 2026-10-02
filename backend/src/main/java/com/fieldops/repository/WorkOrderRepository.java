@@ -14,4 +14,10 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> findByEquipmentId(Long equipmentId);
 
     List<WorkOrder> findByEngineerId(Long engineerId);
+
+    boolean existsByEquipmentIdAndPriorityInAndStatusIn(
+            Long equipmentId,
+            List<String> priorities,
+            List<String> statuses
+    );
 }

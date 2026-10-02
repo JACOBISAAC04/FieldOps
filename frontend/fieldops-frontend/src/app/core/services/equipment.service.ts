@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Equipment, EquipmentRequest } from '../models/equipment.model';
+import { EquipmentRisk } from '../models/equipment-risk.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +40,11 @@ export class EquipmentService {
 
   getEquipmentById(id: number): Observable<Equipment> {
     return this.http.get<Equipment>(`${this.apiUrl}/${id}`);
+  }
+  getEquipmentRisk(id: number): Observable<EquipmentRisk> {
+    return this.http.get<EquipmentRisk>(
+      `http://localhost:8080/api/analytics/equipment/${id}`
+    );
   }
 
   createEquipment(request: EquipmentRequest): Observable<Equipment> {

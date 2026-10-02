@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
@@ -214,4 +218,34 @@ class WorkOrderServiceTest {
                 () -> workOrderService.getWorkOrderById(99L)
         );
     }
+    @Test
+        void detectsHighPriorityActiveWorkOrder() {
+        when(workOrderRepository
+                .existsByEquipmentIdAndPriorityInAndStatusIn(
+                        1L,
+                        List.of("HIGH", "CRITICAL"),
+                        List.of("OPEN", "ASSIGNED", "IN_PROGRESS")
+                ))
+                .thenReturn(true);
+
+        boolean result =
+                workOrderService.hasHighPriorityActiveWorkOrder(1L);
+
+        assertTrue(result);
+        }
+        @Test
+        void ignoresEquipmentWithoutHighPriorityActiveWorkOrder() {
+        when(workOrderRepository
+                .existsByEquipmentIdAndPriorityInAndStatusIn(
+                        2L,
+                        List.of("HIGH", "CRITICAL"),
+                        List.of("OPEN", "ASSIGNED", "IN_PROGRESS")
+                ))
+                .thenReturn(false);
+
+        boolean result =
+                workOrderService.hasHighPriorityActiveWorkOrder(2L);
+
+        assertFalse(result);
+        }
 }
