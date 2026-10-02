@@ -46,6 +46,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalState(
+            IllegalStateException exception) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Bad Request");
+        response.put("message", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
     @ExceptionHandler(AnalyticsServiceException.class)
     public ResponseEntity<Map<String, Object>> handleAnalyticsServiceException(
             AnalyticsServiceException exception) {

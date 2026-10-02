@@ -110,3 +110,18 @@ func TestEquipmentRiskHandlerHighPriorityWorkOrder(t *testing.T) {
 		t.Fatalf("unexpected reason: %s", result.Reasons[0])
 	}
 }
+func TestEquipmentRiskHandlerInvalidMaintenanceDate(t *testing.T) {
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"/api/analytics/equipment/1?status=OPERATIONAL&nextMaintenanceDate=invalid-date",
+		nil,
+	)
+
+	rec := httptest.NewRecorder()
+
+	handlers.EquipmentRiskHandler(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", rec.Code)
+	}
+}
