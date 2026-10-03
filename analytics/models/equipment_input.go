@@ -1,9 +1,12 @@
 package models
 
-type EquipmentInput struct {
-	ID                    int    `json:"id"`
-	Name                  string `json:"name"`
-	Status                string `json:"status"`
-	NextMaintenanceDate   string `json:"nextMaintenanceDate"`
-	HighPriorityWorkOrder bool   `json:"highPriorityWorkOrder"`
+type EquipmentAnalyticsInput struct {
+	ID                     int    `json:"equipmentId"`
+	InstallationDate       string `json:"installationDate"`
+	NextMaintenanceDate    string `json:"nextMaintenanceDate"`
+	Status                 string `json:"status"`
+	OpenWorkOrders         int    `json:"openWorkOrders"`
+	OverdueWorkOrders      int    `json:"overdueWorkOrders"`
+	HighPriorityWorkOrders int    `json:"highPriorityWorkOrders"`
+	CompletedWorkOrders    int    `json:"completedWorkOrders"`
 }

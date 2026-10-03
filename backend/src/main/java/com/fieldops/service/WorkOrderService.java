@@ -1,5 +1,5 @@
 package com.fieldops.service;
-
+import com.fieldops.dto.WorkOrderAnalyticsSummary;
 import com.fieldops.dto.WorkOrderRequest;
 import com.fieldops.dto.WorkOrderResponse;
 import com.fieldops.entity.Equipment;
@@ -188,6 +188,52 @@ public class WorkOrderService {
                 List.of("OPEN", "ASSIGNED", "IN_PROGRESS")
         );
     }
+    @Transactional(readOnly = true)
+        public WorkOrderAnalyticsSummary getAnalyticsSummary(Long equipmentId) {
+
+        List<WorkOrder> workOrders =
+                workOrderRepository.findByEquipmentId(equipmentId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        int openWorkOrders = 0;
+        int overdueWorkOrders = 0;
+        int highPriorityWorkOrders = 0;
+        int completedWorkOrders = 0;
+
+        for (WorkOrder workOrder : workOrders) {
+
+                String status = workOrder.getStatus();
+
+                if ("OPEN".equalsIgnoreCase(status)
+                        || "ASSIGNED".equalsIgnoreCase(status)
+                        || "IN_PROGRESS".equalsIgnoreCase(status)) {
+
+                openWorkOrders++;
+
+                if (workOrder.getDueDate() != null
+                        && workOrder.getDueDate().isBefore(now)) {
+                        overdueWorkOrders++;
+                }
+
+                if ("HIGH".equalsIgnoreCase(workOrder.getPriority())
+                        || "CRITICAL".equalsIgnoreCase(workOrder.getPriority())) {
+                        highPriorityWorkOrders++;
+                }
+                }
+
+                if ("COMPLETED".equalsIgnoreCase(status)) {
+                completedWorkOrders++;
+                }
+        }
+
+        return new WorkOrderAnalyticsSummary(
+                openWorkOrders,
+                overdueWorkOrders,
+                highPriorityWorkOrders,
+                completedWorkOrders
+        );
+        }
 
     @Transactional(readOnly = true)
     public List<WorkOrderResponse> getByEngineer(Long engineerId) {

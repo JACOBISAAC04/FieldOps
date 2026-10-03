@@ -1,6 +1,6 @@
 package com.fieldops.client;
 
-import com.fieldops.dto.EquipmentResponse;
+import com.fieldops.dto.EquipmentAnalyticsInput;
 import com.fieldops.dto.EquipmentRiskResponse;
 import com.fieldops.exception.AnalyticsServiceException;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,30 +23,21 @@ public class AnalyticsClient {
     }
 
     public EquipmentRiskResponse getEquipmentRisk(
-            EquipmentResponse equipment,
-            boolean highPriorityWorkOrder) {
+            EquipmentAnalyticsInput input) {
 
         try {
-            String uri =
-                    "/api/analytics/equipment/{id}" +
-                    "?status={status}" +
-                    "&nextMaintenanceDate={nextMaintenanceDate}" +
-                    "&highPriorityWorkOrder={highPriorityWorkOrder}";
 
-            return restClient.get()
-                    .uri(uri,
-                            equipment.getId(),
-                            equipment.getStatus(),
-                            equipment.getNextMaintenanceDate(),
-                            highPriorityWorkOrder)
+            return restClient.post()
+                    .uri("/api/analytics/equipment/risk")
+                    .body(input)
                     .retrieve()
                     .body(EquipmentRiskResponse.class);
 
         } catch (RestClientException exception) {
-            throw new AnalyticsServiceException(
-                    "Analytics service is unavailable",
-                    exception
-            );
-        }
+                throw new AnalyticsServiceException(
+                        "Analytics service is unavailable",
+                        exception
+                );
+                }
     }
 }

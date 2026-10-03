@@ -1,8 +1,10 @@
 package com.fieldops.controller;
 
 import com.fieldops.client.AnalyticsClient;
+import com.fieldops.dto.EquipmentAnalyticsInput;
 import com.fieldops.dto.EquipmentResponse;
 import com.fieldops.dto.EquipmentRiskResponse;
+import com.fieldops.dto.WorkOrderAnalyticsSummary;
 import com.fieldops.service.EquipmentService;
 import com.fieldops.service.WorkOrderService;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +35,23 @@ public class AnalyticsController {
         EquipmentResponse equipment =
                 equipmentService.getEquipmentById(id);
 
-        boolean highPriorityWorkOrder =
-                workOrderService.hasHighPriorityActiveWorkOrder(id);
+        WorkOrderAnalyticsSummary summary =
+                workOrderService.getAnalyticsSummary(id);
+
+        EquipmentAnalyticsInput input =
+                new EquipmentAnalyticsInput();
+
+        input.setEquipmentId(equipment.getId());
+        input.setInstallationDate(equipment.getInstallationDate());
+        input.setNextMaintenanceDate(equipment.getNextMaintenanceDate());
+        input.setStatus(equipment.getStatus());
+        input.setOpenWorkOrders(summary.getOpenWorkOrders());
+        input.setOverdueWorkOrders(summary.getOverdueWorkOrders());
+        input.setHighPriorityWorkOrders(summary.getHighPriorityWorkOrders());
+        input.setCompletedWorkOrders(summary.getCompletedWorkOrders());
 
         EquipmentRiskResponse risk =
-                analyticsClient.getEquipmentRisk(
-                        equipment,
-                        highPriorityWorkOrder
-                );
+                analyticsClient.getEquipmentRisk(input);
 
         return ResponseEntity.ok(risk);
     }

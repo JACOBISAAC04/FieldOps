@@ -9,11 +9,17 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/api/analytics/equipment/", handlers.EquipmentRiskHandler)
+
+	http.HandleFunc(
+		"/api/analytics/equipment/risk",
+		handlers.EquipmentRiskHandler,
+	)
 
 	port := ":8081"
 
-	fmt.Println("FieldOps Analytics Service running on http://localhost" + port)
+	fmt.Println(
+		"FieldOps Analytics Service running on http://localhost" + port,
+	)
 
 	log.Fatal(http.ListenAndServe(port, nil))
 }

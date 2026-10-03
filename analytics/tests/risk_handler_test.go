@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -10,12 +11,27 @@ import (
 	"fieldops-analytics/models"
 )
 
-func TestEquipmentRiskHandlerValidID(t *testing.T) {
+func TestEquipmentRiskHandlerValidRequest(t *testing.T) {
+
+	body := `{
+		"equipmentId": 1,
+		"installationDate": "2024-01-15",
+		"nextMaintenanceDate": "2026-10-10",
+		"status": "ACTIVE",
+		"openWorkOrders": 2,
+		"overdueWorkOrders": 1,
+		"highPriorityWorkOrders": 1,
+		"completedWorkOrders": 10
+	}`
+
 	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/analytics/equipment/1?status=OPERATIONAL&nextMaintenanceDate=2026-10-17",
-		nil,
+		http.MethodPost,
+		"/api/analytics/equipment/risk",
+		bytes.NewBufferString(body),
 	)
+
+	req.Header.Set("Content-Type", "application/json")
+
 	rec := httptest.NewRecorder()
 
 	handlers.EquipmentRiskHandler(rec, req)
@@ -27,66 +43,6 @@ func TestEquipmentRiskHandlerValidID(t *testing.T) {
 	if rec.Header().Get("Content-Type") != "application/json" {
 		t.Fatalf("expected application/json content type")
 	}
-}
-
-func TestEquipmentRiskHandlerInvalidID(t *testing.T) {
-	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/analytics/equipment/abc?status=OPERATIONAL",
-		nil,
-	)
-	rec := httptest.NewRecorder()
-
-	handlers.EquipmentRiskHandler(rec, req)
-
-	if rec.Code != http.StatusBadRequest {
-		t.Fatalf("expected status 400, got %d", rec.Code)
-	}
-}
-
-func TestEquipmentRiskHandlerInvalidPath(t *testing.T) {
-	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/wrong/path",
-		nil,
-	)
-	rec := httptest.NewRecorder()
-
-	handlers.EquipmentRiskHandler(rec, req)
-
-	if rec.Code != http.StatusNotFound {
-		t.Fatalf("expected status 404, got %d", rec.Code)
-	}
-}
-
-func TestEquipmentRiskHandlerMissingStatus(t *testing.T) {
-	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/analytics/equipment/1",
-		nil,
-	)
-	rec := httptest.NewRecorder()
-
-	handlers.EquipmentRiskHandler(rec, req)
-
-	if rec.Code != http.StatusBadRequest {
-		t.Fatalf("expected status 400, got %d", rec.Code)
-	}
-}
-func TestEquipmentRiskHandlerHighPriorityWorkOrder(t *testing.T) {
-	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/analytics/equipment/1?status=OPERATIONAL&nextMaintenanceDate=2026-10-17&highPriorityWorkOrder=true",
-		nil,
-	)
-
-	rec := httptest.NewRecorder()
-
-	handlers.EquipmentRiskHandler(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
-	}
 
 	var result models.RiskResponse
 
@@ -94,28 +50,35 @@ func TestEquipmentRiskHandlerHighPriorityWorkOrder(t *testing.T) {
 		t.Fatalf("failed to decode response: %v", err)
 	}
 
-	if result.RiskLevel != "HIGH" {
-		t.Fatalf("expected HIGH risk, got %s", result.RiskLevel)
+	if result.EquipmentID != 1 {
+		t.Fatalf("expected equipment ID 1, got %d", result.EquipmentID)
 	}
 
-	if result.MaintenanceDue {
-		t.Fatalf("expected maintenanceDue to be false")
+	if result.OpenWorkOrders != 2 {
+		t.Fatalf("expected 2 open work orders, got %d", result.OpenWorkOrders)
 	}
 
-	if len(result.Reasons) != 1 {
-		t.Fatalf("expected 1 reason, got %d", len(result.Reasons))
+	if result.OverdueWorkOrders != 1 {
+		t.Fatalf("expected 1 overdue work order, got %d", result.OverdueWorkOrders)
 	}
 
-	if result.Reasons[0] != "High-priority work order is active" {
-		t.Fatalf("unexpected reason: %s", result.Reasons[0])
+	if result.HighPriorityWorkOrders != 1 {
+		t.Fatalf(
+			"expected 1 high-priority work order, got %d",
+			result.HighPriorityWorkOrders,
+		)
 	}
 }
-func TestEquipmentRiskHandlerInvalidMaintenanceDate(t *testing.T) {
+
+func TestEquipmentRiskHandlerInvalidJSON(t *testing.T) {
+
 	req := httptest.NewRequest(
-		http.MethodGet,
-		"/api/analytics/equipment/1?status=OPERATIONAL&nextMaintenanceDate=invalid-date",
-		nil,
+		http.MethodPost,
+		"/api/analytics/equipment/risk",
+		bytes.NewBufferString(`invalid-json`),
 	)
+
+	req.Header.Set("Content-Type", "application/json")
 
 	rec := httptest.NewRecorder()
 
@@ -123,5 +86,95 @@ func TestEquipmentRiskHandlerInvalidMaintenanceDate(t *testing.T) {
 
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("expected status 400, got %d", rec.Code)
+	}
+}
+
+func TestEquipmentRiskHandlerInvalidEquipmentID(t *testing.T) {
+
+	body := `{
+		"equipmentId": 0,
+		"status": "ACTIVE"
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/analytics/equipment/risk",
+		bytes.NewBufferString(body),
+	)
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	handlers.EquipmentRiskHandler(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", rec.Code)
+	}
+}
+
+func TestEquipmentRiskHandlerMissingStatus(t *testing.T) {
+
+	body := `{
+		"equipmentId": 1,
+		"openWorkOrders": 2
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/analytics/equipment/risk",
+		bytes.NewBufferString(body),
+	)
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	handlers.EquipmentRiskHandler(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", rec.Code)
+	}
+}
+
+func TestEquipmentRiskHandlerNegativeWorkOrderCount(t *testing.T) {
+
+	body := `{
+		"equipmentId": 1,
+		"status": "ACTIVE",
+		"openWorkOrders": -1
+	}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/analytics/equipment/risk",
+		bytes.NewBufferString(body),
+	)
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	handlers.EquipmentRiskHandler(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", rec.Code)
+	}
+}
+
+func TestEquipmentRiskHandlerMethodNotAllowed(t *testing.T) {
+
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"/api/analytics/equipment/risk",
+		nil,
+	)
+
+	rec := httptest.NewRecorder()
+
+	handlers.EquipmentRiskHandler(rec, req)
+
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected status 405, got %d", rec.Code)
 	}
 }

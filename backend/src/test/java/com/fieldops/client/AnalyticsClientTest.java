@@ -1,6 +1,6 @@
 package com.fieldops.client;
 
-import com.fieldops.dto.EquipmentResponse;
+import com.fieldops.dto.EquipmentAnalyticsInput;
 import com.fieldops.dto.EquipmentRiskResponse;
 import com.fieldops.exception.AnalyticsServiceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
-
-
 class AnalyticsClientTest {
 
     private MockRestServiceServer server;
@@ -22,7 +20,6 @@ class AnalyticsClientTest {
 
     @BeforeEach
     void setUp() {
-
         RestClient.Builder builder = RestClient.builder();
 
         server = MockRestServiceServer.bindTo(builder).build();
@@ -37,20 +34,29 @@ class AnalyticsClientTest {
     @Test
     void getEquipmentRiskReturnsResponseWhenAnalyticsServiceSucceeds() {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(1L);
-        equipment.setStatus("ACTIVE");
-        equipment.setNextMaintenanceDate(null);
+        EquipmentAnalyticsInput input = createInput();
 
         server.expect(
                 requestTo(
-                        "http://localhost:8081/api/analytics/equipment/1" +
-                        "?status=ACTIVE" +
-                        "&nextMaintenanceDate=" +
-                        "&highPriorityWorkOrder=true"
+                        "http://localhost:8081/api/analytics/equipment/risk"
                 )
         )
-        .andExpect(method(org.springframework.http.HttpMethod.GET))
+        .andExpect(method(org.springframework.http.HttpMethod.POST))
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(
+                """
+                {
+                    "equipmentId": 1,
+                    "installationDate": [2024, 1, 15],
+                    "nextMaintenanceDate": [2026, 10, 10],
+                    "status": "ACTIVE",
+                    "openWorkOrders": 4,
+                    "overdueWorkOrders": 2,
+                    "highPriorityWorkOrders": 1,
+                    "completedWorkOrders": 12
+                }
+                """
+        ))
         .andRespond(
                 withSuccess(
                         """
@@ -58,7 +64,13 @@ class AnalyticsClientTest {
                             "equipmentId": 1,
                             "riskLevel": "HIGH",
                             "riskScore": 85.0,
-                            "reasons": ["High priority work order"]
+                            "maintenanceDue": true,
+                            "healthScore": 15.0,
+                            "openWorkOrders": 4,
+                            "overdueWorkOrders": 2,
+                            "highPriorityWorkOrders": 1,
+                            "completedWorkOrders": 12,
+                            "reasons": ["Overdue work orders", "High priority work order"]
                         }
                         """,
                         MediaType.APPLICATION_JSON
@@ -66,12 +78,13 @@ class AnalyticsClientTest {
         );
 
         EquipmentRiskResponse result =
-                analyticsClient.getEquipmentRisk(
-                        equipment,
-                        true
-                );
+                analyticsClient.getEquipmentRisk(input);
 
         assertNotNull(result);
+        assertEquals(1L, result.getEquipmentId());
+        assertEquals("HIGH", result.getRiskLevel());
+        assertTrue(result.isMaintenanceDue());
+        assertNotNull(result.getReasons());
 
         server.verify();
     }
@@ -79,20 +92,14 @@ class AnalyticsClientTest {
     @Test
     void getEquipmentRiskThrowsAnalyticsServiceExceptionWhenServiceFails() {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(1L);
-        equipment.setStatus("ACTIVE");
-        equipment.setNextMaintenanceDate(null);
+        EquipmentAnalyticsInput input = createInput();
 
         server.expect(
                 requestTo(
-                        "http://localhost:8081/api/analytics/equipment/1" +
-                        "?status=ACTIVE" +
-                        "&nextMaintenanceDate=" +
-                        "&highPriorityWorkOrder=false"
+                        "http://localhost:8081/api/analytics/equipment/risk"
                 )
         )
-        .andExpect(method(org.springframework.http.HttpMethod.GET))
+        .andExpect(method(org.springframework.http.HttpMethod.POST))
         .andRespond(
                 withServerError()
         );
@@ -100,10 +107,7 @@ class AnalyticsClientTest {
         AnalyticsServiceException exception =
                 assertThrows(
                         AnalyticsServiceException.class,
-                        () -> analyticsClient.getEquipmentRisk(
-                                equipment,
-                                false
-                        )
+                        () -> analyticsClient.getEquipmentRisk(input)
                 );
 
         assertEquals(
@@ -117,22 +121,30 @@ class AnalyticsClientTest {
     }
 
     @Test
-    void getEquipmentRiskSendsHighPriorityWorkOrderFlag() {
+    void getEquipmentRiskSendsCompleteAnalyticsInput() {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(1L);
-        equipment.setStatus("ACTIVE");
-        equipment.setNextMaintenanceDate(null);
+        EquipmentAnalyticsInput input = createInput();
 
         server.expect(
                 requestTo(
-                        "http://localhost:8081/api/analytics/equipment/1" +
-                        "?status=ACTIVE" +
-                        "&nextMaintenanceDate=" +
-                        "&highPriorityWorkOrder=true"
+                        "http://localhost:8081/api/analytics/equipment/risk"
                 )
         )
-        .andExpect(method(org.springframework.http.HttpMethod.GET))
+        .andExpect(method(org.springframework.http.HttpMethod.POST))
+        .andExpect(content().json(
+                """
+                {
+                    "equipmentId": 1,
+                    "installationDate": [2024, 1, 15],
+                    "nextMaintenanceDate": [2026, 10, 10],
+                    "status": "ACTIVE",
+                    "openWorkOrders": 4,
+                    "overdueWorkOrders": 2,
+                    "highPriorityWorkOrders": 1,
+                    "completedWorkOrders": 12
+                }
+                """
+        ))
         .andRespond(
                 withSuccess(
                         """
@@ -140,7 +152,8 @@ class AnalyticsClientTest {
                             "equipmentId": 1,
                             "riskLevel": "HIGH",
                             "riskScore": 85.0,
-                            "reasons": ["High priority work order"]
+                            "maintenanceDue": true,
+                            "reasons": ["Overdue work orders"]
                         }
                         """,
                         MediaType.APPLICATION_JSON
@@ -148,20 +161,33 @@ class AnalyticsClientTest {
         );
 
         EquipmentRiskResponse result =
-                analyticsClient.getEquipmentRisk(
-                        equipment,
-                        true
-                );
+                analyticsClient.getEquipmentRisk(input);
 
         assertNotNull(result);
         assertEquals(1L, result.getEquipmentId());
         assertEquals("HIGH", result.getRiskLevel());
+        assertTrue(result.isMaintenanceDue());
         assertNotNull(result.getReasons());
-        assertTrue(
-                result.getReasons()
-                        .contains("High priority work order")
-        );
 
         server.verify();
+    }
+
+    private EquipmentAnalyticsInput createInput() {
+        EquipmentAnalyticsInput input = new EquipmentAnalyticsInput();
+
+        input.setEquipmentId(1L);
+        input.setInstallationDate(
+                java.time.LocalDate.of(2024, 1, 15)
+        );
+        input.setNextMaintenanceDate(
+                java.time.LocalDate.of(2026, 10, 10)
+        );
+        input.setStatus("ACTIVE");
+        input.setOpenWorkOrders(4);
+        input.setOverdueWorkOrders(2);
+        input.setHighPriorityWorkOrders(1);
+        input.setCompletedWorkOrders(12);
+
+        return input;
     }
 }

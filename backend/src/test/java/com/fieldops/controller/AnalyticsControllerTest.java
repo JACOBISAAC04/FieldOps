@@ -3,6 +3,7 @@ package com.fieldops.controller;
 import com.fieldops.client.AnalyticsClient;
 import com.fieldops.dto.EquipmentResponse;
 import com.fieldops.dto.EquipmentRiskResponse;
+import com.fieldops.dto.WorkOrderAnalyticsSummary;
 import com.fieldops.exception.AnalyticsServiceException;
 import com.fieldops.exception.GlobalExceptionHandler;
 import com.fieldops.exception.ResourceNotFoundException;
@@ -12,13 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,23 +41,34 @@ class AnalyticsControllerTest {
     @Test
     void getEquipmentRiskReturnsRiskResponse() throws Exception {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(1L);
-        equipment.setStatus("ACTIVE");
+        EquipmentResponse equipment = createEquipment(1L);
+
+        WorkOrderAnalyticsSummary summary =
+                new WorkOrderAnalyticsSummary(
+                        4,
+                        2,
+                        1,
+                        12
+                );
 
         EquipmentRiskResponse risk = new EquipmentRiskResponse();
         risk.setEquipmentId(1L);
         risk.setRiskLevel("HIGH");
         risk.setMaintenanceDue(true);
-        risk.setReasons(List.of("Maintenance due", "High priority work order"));
+        risk.setReasons(
+                java.util.List.of(
+                        "Maintenance due",
+                        "High priority work order"
+                )
+        );
 
         when(equipmentService.getEquipmentById(1L))
                 .thenReturn(equipment);
 
-        when(workOrderService.hasHighPriorityActiveWorkOrder(1L))
-                .thenReturn(true);
+        when(workOrderService.getAnalyticsSummary(1L))
+                .thenReturn(summary);
 
-        when(analyticsClient.getEquipmentRisk(equipment, true))
+        when(analyticsClient.getEquipmentRisk(any()))
                 .thenReturn(risk);
 
         mockMvc.perform(
@@ -73,8 +83,8 @@ class AnalyticsControllerTest {
         .andExpect(jsonPath("$.reasons[1]").value("High priority work order"));
 
         verify(equipmentService).getEquipmentById(1L);
-        verify(workOrderService).hasHighPriorityActiveWorkOrder(1L);
-        verify(analyticsClient).getEquipmentRisk(equipment, true);
+        verify(workOrderService).getAnalyticsSummary(1L);
+        verify(analyticsClient).getEquipmentRisk(any());
     }
 
     @Test
@@ -108,17 +118,23 @@ class AnalyticsControllerTest {
     void getEquipmentRiskReturns503WhenAnalyticsServiceIsUnavailable()
             throws Exception {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(1L);
-        equipment.setStatus("ACTIVE");
+        EquipmentResponse equipment = createEquipment(1L);
+
+        WorkOrderAnalyticsSummary summary =
+                new WorkOrderAnalyticsSummary(
+                        2,
+                        1,
+                        0,
+                        5
+                );
 
         when(equipmentService.getEquipmentById(1L))
                 .thenReturn(equipment);
 
-        when(workOrderService.hasHighPriorityActiveWorkOrder(1L))
-                .thenReturn(false);
+        when(workOrderService.getAnalyticsSummary(1L))
+                .thenReturn(summary);
 
-        when(analyticsClient.getEquipmentRisk(equipment, false))
+        when(analyticsClient.getEquipmentRisk(any()))
                 .thenThrow(
                         new AnalyticsServiceException(
                                 "Analytics service is unavailable",
@@ -142,31 +158,39 @@ class AnalyticsControllerTest {
         );
 
         verify(equipmentService).getEquipmentById(1L);
-        verify(workOrderService).hasHighPriorityActiveWorkOrder(1L);
-        verify(analyticsClient).getEquipmentRisk(equipment, false);
+        verify(workOrderService).getAnalyticsSummary(1L);
+        verify(analyticsClient).getEquipmentRisk(any());
     }
 
     @Test
-    void getEquipmentRiskPassesHighPriorityFlagToAnalyticsClient()
+    void getEquipmentRiskPassesWorkOrderSummaryToAnalyticsClient()
             throws Exception {
 
-        EquipmentResponse equipment = new EquipmentResponse();
-        equipment.setId(5L);
-        equipment.setStatus("ACTIVE");
+        EquipmentResponse equipment = createEquipment(5L);
+
+        WorkOrderAnalyticsSummary summary =
+                new WorkOrderAnalyticsSummary(
+                        7,
+                        3,
+                        2,
+                        15
+                );
 
         EquipmentRiskResponse risk = new EquipmentRiskResponse();
         risk.setEquipmentId(5L);
         risk.setRiskLevel("MEDIUM");
         risk.setMaintenanceDue(false);
-        risk.setReasons(List.of("No immediate risk"));
+        risk.setReasons(
+                java.util.List.of("No immediate risk")
+        );
 
         when(equipmentService.getEquipmentById(5L))
                 .thenReturn(equipment);
 
-        when(workOrderService.hasHighPriorityActiveWorkOrder(5L))
-                .thenReturn(false);
+        when(workOrderService.getAnalyticsSummary(5L))
+                .thenReturn(summary);
 
-        when(analyticsClient.getEquipmentRisk(equipment, false))
+        when(analyticsClient.getEquipmentRisk(any()))
                 .thenReturn(risk);
 
         mockMvc.perform(
@@ -176,6 +200,23 @@ class AnalyticsControllerTest {
         .andExpect(jsonPath("$.equipmentId").value(5))
         .andExpect(jsonPath("$.riskLevel").value("MEDIUM"));
 
-        verify(analyticsClient).getEquipmentRisk(equipment, false);
+        verify(equipmentService).getEquipmentById(5L);
+        verify(workOrderService).getAnalyticsSummary(5L);
+        verify(analyticsClient).getEquipmentRisk(any());
+    }
+
+    private EquipmentResponse createEquipment(Long id) {
+        EquipmentResponse equipment = new EquipmentResponse();
+
+        equipment.setId(id);
+        equipment.setStatus("ACTIVE");
+        equipment.setInstallationDate(
+                java.time.LocalDate.of(2024, 1, 15)
+        );
+        equipment.setNextMaintenanceDate(
+                java.time.LocalDate.of(2026, 10, 10)
+        );
+
+        return equipment;
     }
 }

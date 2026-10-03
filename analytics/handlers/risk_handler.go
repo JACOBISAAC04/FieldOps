@@ -3,57 +3,45 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
-	"strings"
-	"time"
 
 	"fieldops-analytics/models"
 	"fieldops-analytics/services"
 )
 
 func EquipmentRiskHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 
-	if len(parts) != 4 || parts[0] != "api" || parts[1] != "analytics" || parts[2] != "equipment" {
-		http.NotFound(w, r)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	id, err := strconv.Atoi(parts[3])
-	if err != nil || id <= 0 {
+	var input models.EquipmentAnalyticsInput
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if input.ID <= 0 {
 		http.Error(w, "Invalid equipment ID", http.StatusBadRequest)
 		return
 	}
 
-	query := r.URL.Query()
-
-	status := query.Get("status")
-	if status == "" {
-		http.Error(w, "Missing status", http.StatusBadRequest)
+	if input.Status == "" {
+		http.Error(w, "Missing equipment status", http.StatusBadRequest)
 		return
 	}
 
-	var nextMaintenanceDate time.Time
+	if input.OpenWorkOrders < 0 ||
+		input.OverdueWorkOrders < 0 ||
+		input.HighPriorityWorkOrders < 0 ||
+		input.CompletedWorkOrders < 0 {
 
-	if value := query.Get("nextMaintenanceDate"); value != "" {
-		nextMaintenanceDate, err = time.Parse("2006-01-02", value)
-
-		if err != nil {
-			http.Error(w, "Invalid next maintenance date", http.StatusBadRequest)
-			return
-		}
+		http.Error(w, "Work order counts cannot be negative", http.StatusBadRequest)
+		return
 	}
 
-	highPriorityWorkOrder := query.Get("highPriorityWorkOrder") == "true"
-
-	equipment := models.Equipment{
-		ID:                    id,
-		Status:                status,
-		NextMaintenanceDate:   nextMaintenanceDate,
-		HighPriorityWorkOrder: highPriorityWorkOrder,
-	}
-
-	result := services.CalculateRisk(equipment)
+	result := services.CalculateRisk(input)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
