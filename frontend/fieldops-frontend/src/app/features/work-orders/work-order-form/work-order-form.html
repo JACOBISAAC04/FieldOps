@@ -1,119 +1,197 @@
 <section class="work-order-form-page">
 
-  <button type="button" (click)="cancel()">
+  <button
+    class="back-button"
+    type="button"
+    (click)="cancel()">
     ← Back to Work Orders
   </button>
 
-  <h1>Create Work Order</h1>
-  <p>Raise a new maintenance task for a piece of equipment.</p>
+  <div class="page-heading">
+    <span class="eyebrow">FIELD OPERATIONS</span>
+    <h1>Create Work Order</h1>
+    <p>Raise a new maintenance task for a piece of equipment.</p>
+  </div>
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <div class="error-card">
+      <span class="eyebrow">ERROR</span>
+      <strong>Unable to create work order</strong>
+      <span>{{ error() }}</span>
+    </div>
   }
 
   @if (loadingEquipment() || loadingEngineers()) {
-    <p>Loading form data...</p>
+
+    <div class="state-card">
+      <span class="state-dot"></span>
+      Loading form data...
+    </div>
+
   } @else {
+
     <form (ngSubmit)="submit()">
 
-      <div class="form-group">
-        <label for="equipmentId">Equipment</label>
+      <div class="form-card">
 
-        <select
-          id="equipmentId"
-          name="equipmentId"
-          [(ngModel)]="form.equipmentId"
-          required>
+        <div class="card-heading">
+          <span class="eyebrow">WORK ORDER DETAILS</span>
+          <h2>Maintenance Request</h2>
+          <p>Assign the task, set its priority, and provide the required work details.</p>
+        </div>
 
-          <option [ngValue]="null">
-            Select equipment
-          </option>
+        <div class="form-grid">
 
-          @for (item of equipmentList(); track item.id) {
-            <option [ngValue]="item.id">
-              {{ item.name }} — {{ item.location }} — {{ item.status }}
-            </option>
-          }
-        </select>
-      </div>
+          <div class="form-group full-width">
+            <label for="equipmentId">
+              Equipment
+            </label>
 
-      <div class="form-group">
-        <label for="engineerId">Engineer</label>
+            <select
+              id="equipmentId"
+              name="equipmentId"
+              [(ngModel)]="form.equipmentId"
+              required>
 
-        <select
-          id="engineerId"
-          name="engineerId"
-          [(ngModel)]="form.engineerId">
+              <option [ngValue]="null">
+                Select equipment
+              </option>
 
-          <option [ngValue]="null">
-            Unassigned
-          </option>
+              @for (item of equipmentList(); track item.id) {
+                <option [ngValue]="item.id">
+                  {{ item.name }} — {{ item.location }} — {{ item.status }}
+                </option>
+              }
 
-          @for (engineer of engineers(); track engineer.id) {
-            <option [ngValue]="engineer.id">
-              {{ engineer.name }} — {{ engineer.specialization }}
-            </option>
-          }
-        </select>
-      </div>
+            </select>
 
-      <div class="form-group">
-        <label for="priority">Priority</label>
+            <span class="field-hint">
+              Select the equipment requiring maintenance.
+            </span>
+          </div>
 
-        <select
-          id="priority"
-          name="priority"
-          [(ngModel)]="form.priority"
-          required>
+          <div class="form-group">
 
-          <option value="LOW">Low</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HIGH">High</option>
-          <option value="CRITICAL">Critical</option>
-        </select>
-      </div>
+            <label for="engineerId">
+              Engineer
+            </label>
 
-      <div class="form-group">
-        <label for="description">Description</label>
+            <select
+              id="engineerId"
+              name="engineerId"
+              [(ngModel)]="form.engineerId">
 
-        <textarea
-          id="description"
-          name="description"
-          rows="4"
-          [(ngModel)]="form.description"
-          placeholder="Describe the maintenance task..."
-          required>
-        </textarea>
-      </div>
+              <option [ngValue]="null">
+                Unassigned
+              </option>
 
-      <div class="form-group">
-        <label for="dueDate">Due date</label>
+              @for (engineer of engineers(); track engineer.id) {
+                <option [ngValue]="engineer.id">
+                  {{ engineer.name }} — {{ engineer.specialization }}
+                </option>
+              }
 
-        <input
-          id="dueDate"
-          name="dueDate"
-          type="datetime-local"
-          [(ngModel)]="form.dueDate">
+            </select>
+
+            <span class="field-hint">
+              Optional assignment.
+            </span>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="priority">
+              Priority
+            </label>
+
+            <select
+              id="priority"
+              name="priority"
+              [(ngModel)]="form.priority"
+              required>
+
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+
+            </select>
+
+            <span class="field-hint">
+              Set the operational urgency.
+            </span>
+
+          </div>
+
+          <div class="form-group full-width">
+
+            <label for="description">
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              name="description"
+              rows="5"
+              [(ngModel)]="form.description"
+              placeholder="Describe the maintenance task..."
+              required>
+            </textarea>
+
+            <span class="field-hint">
+              Include the issue, required maintenance, or work to be performed.
+            </span>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="dueDate">
+              Due Date
+            </label>
+
+            <input
+              id="dueDate"
+              name="dueDate"
+              type="datetime-local"
+              [(ngModel)]="form.dueDate">
+
+            <span class="field-hint">
+              Optional deadline for completion.
+            </span>
+
+          </div>
+
+        </div>
+
       </div>
 
       <div class="actions">
 
         <button
+          class="submit-button"
           type="submit"
           [disabled]="saving()">
+
           {{ saving() ? 'Creating...' : 'Create Work Order' }}
+
         </button>
 
         <button
+          class="cancel-button"
           type="button"
           [disabled]="saving()"
           (click)="cancel()">
+
           Cancel
+
         </button>
 
       </div>
 
     </form>
+
   }
 
 </section>

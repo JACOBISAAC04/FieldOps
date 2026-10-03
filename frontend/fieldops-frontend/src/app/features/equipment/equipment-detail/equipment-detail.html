@@ -1,66 +1,212 @@
 <section class="equipment-detail-page">
-  <a routerLink="/equipment">← Back to Equipment</a>
+  <a class="back-link" routerLink="/equipment">
+    <span>←</span>
+    <span>Equipment</span>
+  </a>
 
   @if (loading()) {
-    <p>Loading equipment...</p>
+    <div class="state-card">
+      <span class="state-dot"></span>
+      Loading equipment...
+    </div>
   }
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <div class="state-card error-state">
+      {{ error() }}
+    </div>
   }
 
   @if (!loading() && equipment()) {
-    <div class="header">
-      <div>
-        <h1>{{ equipment()!.name }}</h1>
-        <p>{{ equipment()!.type }}</p>
-      </div>
+    <div class="page-header">
+      <div class="header-content">
+        <span class="eyebrow">EQUIPMENT</span>
 
-      <span class="status">{{ equipment()!.status }}</span>
+        <div class="title-row">
+          <h1>{{ equipment()!.name }}</h1>
+
+          <span
+            class="status"
+            [class.operational]="equipment()!.status === 'OPERATIONAL'"
+            [class.maintenance]="equipment()!.status === 'MAINTENANCE_REQUIRED'"
+            [class.deactivated]="equipment()!.status === 'DEACTIVATED'"
+          >
+            <span class="status-dot"></span>
+            {{ equipment()!.status }}
+          </span>
+        </div>
+
+        <p class="subtitle">
+          {{ equipment()!.type }} · Equipment #{{ equipment()!.id }}
+        </p>
+      </div>
     </div>
 
-    <div class="risk-card">
-      <div class="risk-header">
-        <h2>Equipment Risk</h2>
-      </div>
-
-      @if (riskLoading()) {
-        <p>Loading risk assessment...</p>
-      } @else if (riskError()) {
-        <p class="error">{{ riskError() }}</p>
-      } @else if (risk()) {
-        <div class="risk-details">
+    <div class="content-grid">
+      <section class="panel overview-panel">
+        <div class="panel-header">
           <div>
-            <strong>Risk Level</strong>
-            <span>{{ risk()!.riskLevel }}</span>
-          </div>
-
-          <div>
-            <strong>Maintenance Due</strong>
-            <span>{{ risk()!.maintenanceDue ? 'Yes' : 'No' }}</span>
+            <span class="eyebrow">ASSET INFORMATION</span>
+            <h2>Equipment Overview</h2>
           </div>
         </div>
 
-        @if (risk()!.reasons.length > 0) {
-          <div class="risk-reasons">
-            <strong>Reasons</strong>
-
-            <ul>
-              @for (reason of risk()!.reasons; track reason) {
-                <li>{{ reason }}</li>
-              }
-            </ul>
+        <div class="overview-grid">
+          <div class="info-item">
+            <span class="info-label">TYPE</span>
+            <span class="info-value">{{ equipment()!.type }}</span>
           </div>
+
+          <div class="info-item">
+            <span class="info-label">LOCATION</span>
+            <span class="info-value">{{ equipment()!.location }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">INSTALLATION DATE</span>
+            <span class="info-value">{{ equipment()!.installationDate }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">NEXT MAINTENANCE</span>
+            <span class="info-value">
+              {{ equipment()!.nextMaintenanceDate || 'Not scheduled' }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel risk-panel">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">ANALYTICS</span>
+            <h2>Equipment Risk</h2>
+          </div>
+
+          @if (risk()) {
+            <span
+              class="risk-badge"
+              [class.low]="risk()!.riskLevel === 'LOW'"
+              [class.medium]="risk()!.riskLevel === 'MEDIUM'"
+              [class.high]="risk()!.riskLevel === 'HIGH'"
+            >
+              {{ risk()!.riskLevel }}
+            </span>
+          }
+        </div>
+
+        @if (riskLoading()) {
+          <div class="risk-loading">
+            <span class="state-dot"></span>
+            Loading risk assessment...
+          </div>
+        } @else if (riskError()) {
+          <div class="risk-message error-message">
+            {{ riskError() }}
+          </div>
+        } @else if (risk()) {
+          <div class="risk-summary">
+            <div class="risk-item">
+              <span class="info-label">MAINTENANCE DUE</span>
+              <span
+                class="risk-value"
+                [class.warning]="risk()!.maintenanceDue"
+              >
+                {{ risk()!.maintenanceDue ? 'Yes' : 'No' }}
+              </span>
+            </div>
+          </div>
+
+          @if (risk()!.reasons.length > 0) {
+            <div class="risk-reasons">
+              <span class="info-label">RISK FACTORS</span>
+
+              <ul>
+                @for (reason of risk()!.reasons; track reason) {
+                  <li>
+                    <span class="reason-dot"></span>
+                    {{ reason }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         }
-      }
+      </section>
     </div>
+        <section class="panel maintenance-panel">
+      <div class="panel-header">
+        <div>
+          <span class="eyebrow">MAINTENANCE</span>
+          <h2>Maintenance History</h2>
+        </div>
+
+        @if (!historyLoading() && !historyError()) {
+          <span class="history-count">
+            {{ maintenanceHistory().length }}
+            {{ maintenanceHistory().length === 1 ? 'record' : 'records' }}
+          </span>
+        }
+      </div>
+
+      @if (historyLoading()) {
+        <div class="risk-loading">
+          <span class="state-dot"></span>
+          Loading maintenance history...
+        </div>
+      } @else if (historyError()) {
+        <div class="risk-message error-message">
+          {{ historyError() }}
+        </div>
+      } @else if (maintenanceHistory().length === 0) {
+        <div class="empty-history">
+          <span class="info-label">NO COMPLETED MAINTENANCE</span>
+          <p>No completed maintenance work orders for this equipment.</p>
+        </div>
+      } @else {
+        <div class="maintenance-list">
+          @for (workOrder of maintenanceHistory(); track workOrder.id) {
+            <div class="maintenance-item">
+              <div class="maintenance-main">
+                <div class="maintenance-title-row">
+                  <h3>Work Order #{{ workOrder.id }}</h3>
+
+                  <span class="status completed">
+                    <span class="status-dot"></span>
+                    {{ workOrder.status }}
+                  </span>
+                </div>
+
+                <p class="maintenance-description">
+                  {{ workOrder.description || 'Maintenance work order' }}
+                </p>
+              </div>
+
+              <div class="maintenance-meta">
+                <span class="info-label">COMPLETED</span>
+                <span class="info-value">
+                  {{ workOrder.completedAt || 'Date unavailable' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
 
     <div class="actions">
-      <a [routerLink]="['/equipment', equipment()!.id, 'edit']">
+      <a
+        class="primary-action"
+        [routerLink]="['/equipment', equipment()!.id, 'edit']"
+      >
         Edit Equipment
       </a>
 
-      <button type="button" (click)="deactivate()">
+      <button
+        class="secondary-action"
+        type="button"
+        (click)="deactivate()"
+      >
         Deactivate Equipment
       </button>
     </div>

@@ -97,6 +97,14 @@ public class WorkOrderController {
                 workOrderService.getByEquipment(equipmentId)
         );
     }
+    @GetMapping("/equipment/{equipmentId}/history")
+        public ResponseEntity<List<WorkOrderResponse>> getMaintenanceHistory(
+                @PathVariable Long equipmentId) {
+
+        return ResponseEntity.ok(
+                workOrderService.getMaintenanceHistory(equipmentId)
+        );
+        }
 
     @GetMapping("/engineer/{engineerId}")
     public ResponseEntity<List<WorkOrderResponse>> getByEngineer(
@@ -106,4 +114,10 @@ public class WorkOrderController {
                 workOrderService.getByEngineer(engineerId)
         );
     }
+    @GetMapping("/overdue")
+        public ResponseEntity<List<WorkOrderResponse>> getOverdueWorkOrders() {
+        return ResponseEntity.ok(
+                workOrderService.getOverdueWorkOrders()
+        );
+        }
 }

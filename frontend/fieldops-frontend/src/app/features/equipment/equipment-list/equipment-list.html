@@ -1,101 +1,213 @@
 <section class="equipment-page">
-  <div class="page-header">
+
+  <header class="page-heading">
     <div>
+      <span class="eyebrow">ASSET MANAGEMENT</span>
       <h1>Equipment</h1>
-      <p>Manage field equipment and maintenance status.</p>
+      <p>Monitor your equipment fleet and maintenance status.</p>
     </div>
-  </div>
 
-  <div class="filters">
-    <input
-      type="text"
-      placeholder="Search by name"
-      [(ngModel)]="nameFilter">
+    <div class="heading-meta">
+      <span class="equipment-count">
+        {{ equipment().length }} assets
+      </span>
+    </div>
+  </header>
 
-    <input
-      type="text"
-      placeholder="Filter by status"
-      [(ngModel)]="statusFilter">
+  <section class="control-panel">
 
-    <input
-      type="text"
-      placeholder="Filter by type"
-      [(ngModel)]="typeFilter">
+    <div class="search-field">
+      <span class="search-icon">⌕</span>
 
-    <input
-      type="text"
-      placeholder="Filter by location"
-      [(ngModel)]="locationFilter">
+      <input
+        type="text"
+        placeholder="Search equipment..."
+        [(ngModel)]="nameFilter">
+    </div>
 
-    <button type="button" (click)="loadEquipment()">
+    <div class="filter-field">
+      <input
+        type="text"
+        placeholder="Status"
+        [(ngModel)]="statusFilter">
+    </div>
+
+    <div class="filter-field">
+      <input
+        type="text"
+        placeholder="Type"
+        [(ngModel)]="typeFilter">
+    </div>
+
+    <div class="filter-field">
+      <input
+        type="text"
+        placeholder="Location"
+        [(ngModel)]="locationFilter">
+    </div>
+
+    <button
+      type="button"
+      class="search-button"
+      (click)="loadEquipment()">
       Search
     </button>
 
-    <button type="button" (click)="clearFilters()">
+    <button
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()">
       Clear
     </button>
 
-    <button type="button" (click)="loadMaintenanceDue()">
-      Maintenance Due
-    </button>
-  </div>
+  </section>
 
-  @if (maintenanceDue()) {
-    <div class="maintenance-banner">
-      <strong>Maintenance Due</strong>
-      <span>Showing equipment that requires maintenance.</span>
+  <section class="equipment-toolbar">
 
-      <button type="button" (click)="loadEquipment()">
-        Show All Equipment
-      </button>
+    <div class="toolbar-left">
+
+      <span class="toolbar-label">
+        {{ maintenanceDue() ? 'Maintenance due' : 'All equipment' }}
+      </span>
+
+      @if (maintenanceDue()) {
+        <span class="active-filter">
+          Attention required
+        </span>
+      }
+
     </div>
-  }
+
+    <button
+      type="button"
+      class="maintenance-button"
+      [class.active]="maintenanceDue()"
+      (click)="loadMaintenanceDue()">
+
+      <span>!</span>
+      Maintenance due
+    </button>
+
+    @if (maintenanceDue()) {
+      <button
+        type="button"
+        class="show-all-button"
+        (click)="loadEquipment()">
+        Show all
+      </button>
+    }
+
+  </section>
 
   @if (loading()) {
-    <p>Loading equipment...</p>
+
+    <div class="state-card">
+      <span class="state-dot"></span>
+      <span>Loading equipment...</span>
+    </div>
+
   }
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+
+    <div class="error-card">
+      <div>
+        <span class="eyebrow">SYSTEM STATUS</span>
+        <strong>Unable to load equipment</strong>
+        <span>{{ error() }}</span>
+      </div>
+
+      <button
+        type="button"
+        class="retry-button"
+        (click)="loadEquipment()">
+        Retry
+      </button>
+    </div>
+
   }
 
   @if (!loading() && !error()) {
+
     @if (equipment().length === 0) {
-      <p>No equipment found.</p>
+
+      <div class="empty-card">
+        <span class="empty-icon">◈</span>
+        <strong>No equipment found</strong>
+        <span>Try adjusting your search or filters.</span>
+      </div>
+
     } @else {
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th>Installation Date</th>
-            <th>Next Maintenance</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          @for (item of equipment(); track item.id) {
-            <tr>
-              <td>{{ item.id }}</td>
+      <section class="equipment-table">
 
-              <td>
-                <a [routerLink]="['/equipment', item.id]">
-                  {{ item.name }}
-                </a>
-              </td>
+        <div class="table-header">
+          <span>Equipment</span>
+          <span>Type</span>
+          <span>Location</span>
+          <span>Status</span>
+          <span>Next maintenance</span>
+          <span></span>
+        </div>
 
-              <td>{{ item.type }}</td>
-              <td>{{ item.location }}</td>
-              <td>{{ item.status }}</td>
-              <td>{{ item.installationDate }}</td>
-              <td>{{ item.nextMaintenanceDate || 'Not scheduled' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        @for (item of equipment(); track item.id) {
+
+          <a
+            class="equipment-row"
+            [routerLink]="['/equipment', item.id]">
+
+            <div class="equipment-name">
+              <div class="equipment-avatar">
+                ◈
+              </div>
+
+              <div class="equipment-title">
+                <strong>{{ item.name }}</strong>
+                <span>Equipment #{{ item.id }}</span>
+              </div>
+            </div>
+
+            <div class="table-value">
+              {{ item.type }}
+            </div>
+
+            <div class="table-value location-value">
+              <span class="location-dot"></span>
+              {{ item.location }}
+            </div>
+
+            <div>
+              <span
+                class="status-badge"
+                [class.operational]="item.status === 'OPERATIONAL'"
+                [class.maintenance]="item.status === 'MAINTENANCE'"
+                [class.deactivated]="item.status === 'DEACTIVATED'">
+                <span></span>
+                {{ item.status }}
+              </span>
+            </div>
+
+            <div class="maintenance-date">
+              @if (item.nextMaintenanceDate) {
+                <strong>{{ item.nextMaintenanceDate }}</strong>
+                <span>Scheduled</span>
+              } @else {
+                <span class="not-scheduled">Not scheduled</span>
+              }
+            </div>
+
+            <div class="row-arrow">
+              →
+            </div>
+
+          </a>
+
+        }
+
+      </section>
+
     }
+
   }
+
 </section>

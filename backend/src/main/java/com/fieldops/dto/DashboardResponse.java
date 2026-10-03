@@ -9,7 +9,11 @@ public class DashboardResponse {
 
     private long totalWorkOrders;
     private long openWorkOrders;
+    private long assignedWorkOrders;
+    private long inProgressWorkOrders;
+    private long overdueWorkOrders;
     private long highPriorityWorkOrders;
+    private long criticalWorkOrders;
 
     private long availableEngineers;
     private long busyEngineers;
@@ -68,12 +72,44 @@ public class DashboardResponse {
         this.openWorkOrders = openWorkOrders;
     }
 
+    public long getAssignedWorkOrders() {
+        return assignedWorkOrders;
+    }
+
+    public void setAssignedWorkOrders(long assignedWorkOrders) {
+        this.assignedWorkOrders = assignedWorkOrders;
+    }
+
+    public long getInProgressWorkOrders() {
+        return inProgressWorkOrders;
+    }
+
+    public void setInProgressWorkOrders(long inProgressWorkOrders) {
+        this.inProgressWorkOrders = inProgressWorkOrders;
+    }
+
+    public long getOverdueWorkOrders() {
+        return overdueWorkOrders;
+    }
+
+    public void setOverdueWorkOrders(long overdueWorkOrders) {
+        this.overdueWorkOrders = overdueWorkOrders;
+    }
+
     public long getHighPriorityWorkOrders() {
         return highPriorityWorkOrders;
     }
 
     public void setHighPriorityWorkOrders(long highPriorityWorkOrders) {
         this.highPriorityWorkOrders = highPriorityWorkOrders;
+    }
+
+    public long getCriticalWorkOrders() {
+        return criticalWorkOrders;
+    }
+
+    public void setCriticalWorkOrders(long criticalWorkOrders) {
+        this.criticalWorkOrders = criticalWorkOrders;
     }
 
     public long getAvailableEngineers() {

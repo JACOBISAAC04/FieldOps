@@ -1,119 +1,260 @@
 <section class="work-order-detail-page">
-  <button type="button" (click)="back()">← Back to Work Orders</button>
+
+  <button
+    class="back-button"
+    type="button"
+    (click)="back()">
+    ← Back to Work Orders
+  </button>
 
   @if (loading()) {
-    <p>Loading work order...</p>
+
+    <div class="state-card">
+      <span class="state-dot"></span>
+      Loading work order...
+    </div>
+
   } @else if (workOrder(); as wo) {
-    <h1>Work Order #{{ wo.id }}</h1>
+
+    <div class="page-heading">
+
+      <div>
+        <span class="eyebrow">WORK ORDER</span>
+
+        <div class="title-row">
+          <h1>Work Order #{{ wo.id }}</h1>
+
+          <span
+            class="status-badge"
+            [class.open]="wo.status === 'OPEN'"
+            [class.assigned]="wo.status === 'ASSIGNED'"
+            [class.in-progress]="wo.status === 'IN_PROGRESS'"
+            [class.completed]="wo.status === 'COMPLETED'"
+            [class.cancelled]="wo.status === 'CANCELLED'">
+            <span></span>
+            {{ wo.status }}
+          </span>
+        </div>
+
+        <p>{{ wo.description }}</p>
+      </div>
+
+    </div>
 
     @if (success()) {
-      <p class="success">{{ success() }}</p>
+      <div class="success-card">
+        <span>✓</span>
+        {{ success() }}
+      </div>
     }
 
     @if (error()) {
-      <p class="error">{{ error() }}</p>
+      <div class="error-card">
+        <span class="eyebrow">ERROR</span>
+        <strong>Action could not be completed</strong>
+        <span>{{ error() }}</span>
+      </div>
     }
 
-    <dl class="details">
-      <dt>Equipment ID</dt>
-      <dd>{{ wo.equipmentId }}</dd>
+    <div class="content-grid">
 
-      <dt>Engineer</dt>
-      <dd>
-        @if (wo.engineerId) {
-          @for (engineer of engineers(); track engineer.id) {
-            @if (engineer.id === wo.engineerId) {
-              {{ engineer.name }}
-            }
-          }
-        } @else {
-          Unassigned
+      <div class="details-card">
+
+        <div class="card-heading">
+          <span class="eyebrow">WORK ORDER INFORMATION</span>
+          <h2>Overview</h2>
+        </div>
+
+        <div class="details-grid">
+
+          <div class="detail-item">
+            <span>Equipment ID</span>
+            <strong>#{{ wo.equipmentId }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Engineer</span>
+            <strong>
+              @if (wo.engineerId) {
+                @for (engineer of engineers(); track engineer.id) {
+                  @if (engineer.id === wo.engineerId) {
+                    {{ engineer.name }}
+                  }
+                }
+              } @else {
+                Unassigned
+              }
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Priority</span>
+
+            <span
+              class="priority-badge"
+              [class.low]="wo.priority === 'LOW'"
+              [class.medium]="wo.priority === 'MEDIUM'"
+              [class.high]="wo.priority === 'HIGH'"
+              [class.critical]="wo.priority === 'CRITICAL'">
+              <span></span>
+              {{ wo.priority }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span>Status</span>
+
+            <span class="detail-status">
+              {{ wo.status }}
+            </span>
+          </div>
+
+          <div class="detail-item full-width">
+            <span>Description</span>
+            <strong class="description-value">
+              {{ wo.description }}
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Created</span>
+            <strong>
+              {{ wo.createdAt | date:'medium' }}
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Due Date</span>
+            <strong>
+              {{ wo.dueDate ? (wo.dueDate | date:'medium') : 'No due date' }}
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Completed</span>
+            <strong>
+              {{ wo.completedAt ? (wo.completedAt | date:'medium') : '—' }}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="actions-column">
+
+        @if (canAssignEngineer()) {
+
+          <div class="action-card">
+
+            <div class="card-heading">
+              <span class="eyebrow">ASSIGNMENT</span>
+              <h2>Assign Engineer</h2>
+              <p>
+                Assign or reassign this work order to a field engineer.
+              </p>
+            </div>
+
+            <select
+              name="engineerId"
+              [(ngModel)]="engineerId">
+
+              <option [ngValue]="null">
+                Select engineer
+              </option>
+
+              @for (engineer of engineers(); track engineer.id) {
+                <option [ngValue]="engineer.id">
+                  {{ engineer.name }} — {{ engineer.specialization }}
+                </option>
+              }
+
+            </select>
+
+            <button
+              class="primary-action"
+              type="button"
+              [disabled]="saving() || engineerId === null"
+              (click)="assignEngineer()">
+
+              {{ wo.engineerId ? 'Reassign Engineer' : 'Assign Engineer' }}
+
+            </button>
+
+          </div>
+
         }
-      </dd>
 
-      <dt>Priority</dt>
-      <dd>{{ wo.priority }}</dd>
+        @if (canUpdateStatus()) {
 
-      <dt>Status</dt>
-      <dd>{{ wo.status }}</dd>
+          <div class="action-card">
 
-      <dt>Description</dt>
-      <dd>{{ wo.description }}</dd>
+            <div class="card-heading">
+              <span class="eyebrow">WORKFLOW</span>
+              <h2>Update Status</h2>
+              <p>
+                Move this work order through its operational lifecycle.
+              </p>
+            </div>
 
-      <dt>Created</dt>
-      <dd>{{ wo.createdAt | date:'medium' }}</dd>
+            <select
+              name="status"
+              [(ngModel)]="selectedStatus">
 
-      <dt>Due date</dt>
-      <dd>{{ wo.dueDate ? (wo.dueDate | date:'medium') : 'No due date' }}</dd>
+              @for (status of getAvailableStatuses(); track status) {
+                <option [value]="status">
+                  {{ status }}
+                </option>
+              }
 
-      <dt>Completed</dt>
-      <dd>{{ wo.completedAt ? (wo.completedAt | date:'medium') : '—' }}</dd>
-    </dl>
+            </select>
 
-    @if (canAssignEngineer()) {
-      <div class="action-card">
-        <h2>Assign engineer</h2>
+            <button
+              class="primary-action"
+              type="button"
+              [disabled]="saving()"
+              (click)="changeStatus()">
 
-        <select
-          name="engineerId"
-          [(ngModel)]="engineerId">
+              Update Status
 
-          <option [ngValue]="null">
-            Select engineer
-          </option>
+            </button>
 
-          @for (engineer of engineers(); track engineer.id) {
-            <option [ngValue]="engineer.id">
-              {{ engineer.name }} — {{ engineer.specialization }}
-            </option>
-          }
-        </select>
+          </div>
 
-        <button
-          type="button"
-          [disabled]="saving() || engineerId === null"
-          (click)="assignEngineer()">
-          {{ wo.engineerId ? 'Reassign' : 'Assign' }}
-        </button>
+        }
+
       </div>
-    }
 
-    @if (canUpdateStatus()) {
-      <div class="action-card">
-        <h2>Update status</h2>
-
-        <select
-          name="status"
-          [(ngModel)]="selectedStatus">
-
-          @for (status of getAvailableStatuses(); track status) {
-            <option [value]="status">
-              {{ status }}
-            </option>
-          }
-        </select>
-
-        <button
-          type="button"
-          [disabled]="saving()"
-          (click)="changeStatus()">
-          Update
-        </button>
-      </div>
-    }
+    </div>
 
     @if (wo.status === 'COMPLETED') {
-      <div class="terminal-message">
-        This work order has been completed.
+      <div class="terminal-message completed-message">
+        <span>✓</span>
+        <div>
+          <strong>Work order completed</strong>
+          <span>This maintenance task has been completed.</span>
+        </div>
       </div>
     }
 
     @if (wo.status === 'CANCELLED') {
-      <div class="terminal-message">
-        This work order has been cancelled.
+      <div class="terminal-message cancelled-message">
+        <span>×</span>
+        <div>
+          <strong>Work order cancelled</strong>
+          <span>This maintenance task has been cancelled.</span>
+        </div>
       </div>
     }
+
   } @else {
-    <p class="error">{{ error() }}</p>
+
+    <div class="error-card">
+      <span class="eyebrow">ERROR</span>
+      <strong>Work order not found</strong>
+      <span>{{ error() }}</span>
+    </div>
+
   }
+
 </section>

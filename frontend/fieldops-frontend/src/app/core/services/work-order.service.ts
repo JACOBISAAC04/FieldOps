@@ -66,4 +66,9 @@ export class WorkOrderService {
       `${this.apiUrl}/engineer/${engineerId}`
     );
   }
+    getMaintenanceHistory(equipmentId: number): Observable<WorkOrder[]> {
+    return this.http.get<WorkOrder[]>(
+      `${this.apiUrl}/equipment/${equipmentId}/history`
+    );
+  }
 }

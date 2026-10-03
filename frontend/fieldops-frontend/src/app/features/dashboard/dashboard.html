@@ -1,125 +1,365 @@
 <section class="dashboard-page">
 
-  <div class="dashboard-header">
-    <div>
-      <h1>Dashboard</h1>
-      <p>Overview of equipment, work orders and field engineers.</p>
-    </div>
-
-    <button type="button" (click)="loadDashboard()">
-      Refresh
-    </button>
-  </div>
-
   @if (loading()) {
-    <p class="loading">Loading dashboard...</p>
+    <div class="state-card">
+      <div class="state-indicator"></div>
+      <span>Loading operations data...</span>
+    </div>
   }
 
   @if (error()) {
-    <div class="error">
-      {{ error() }}
+    <div class="error-card">
+      <div>
+        <span class="eyebrow">SYSTEM STATUS</span>
+        <h3>Unable to load dashboard data</h3>
+        <p>{{ error() }}</p>
+      </div>
+
+      <button type="button" class="action-button" (click)="loadDashboard()">
+        Retry
+      </button>
     </div>
   }
 
   @if (!loading() && summary(); as data) {
 
-    <section class="dashboard-section">
-
-      <div class="section-header">
-        <h2>Equipment</h2>
-        <button type="button" (click)="openEquipment()">
-          View Equipment
-        </button>
+    <header class="dashboard-heading">
+      <div>
+        <span class="eyebrow">FIELD OPERATIONS</span>
+        <h1>Dashboard</h1>
+        <p>Monitor equipment, work orders and field engineers.</p>
       </div>
 
-      <div class="card-grid">
+      <button type="button" class="refresh-button" (click)="loadDashboard()">
+        <span>↻</span>
+        Refresh
+      </button>
+    </header>
 
-        <div class="metric-card">
-          <span class="metric-label">Total Equipment</span>
-          <strong>{{ data.totalEquipment }}</strong>
+    <section class="overview-grid">
+
+      <article class="overview-card overview-card-primary">
+        <div class="card-top">
+          <span class="card-label">TOTAL EQUIPMENT</span>
+          <span class="card-symbol">◈</span>
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Operational</span>
-          <strong>{{ data.operationalEquipment }}</strong>
+        <div class="card-value">{{ data.totalEquipment }}</div>
+
+        <div class="card-footer">
+          <span class="status-dot"></span>
+          <span>Assets registered</span>
+        </div>
+      </article>
+
+      <article class="overview-card">
+        <div class="card-top">
+          <span class="card-label">WORK ORDERS</span>
+          <span class="card-symbol">□</span>
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Maintenance Required</span>
-          <strong>{{ data.maintenanceRequiredEquipment }}</strong>
+        <div class="card-value">{{ data.totalWorkOrders }}</div>
+
+        <div class="card-footer">
+          <span class="accent-text">{{ data.highPriorityWorkOrders }}</span>
+          <span>high priority</span>
+        </div>
+      </article>
+
+      <article class="overview-card">
+        <div class="card-top">
+          <span class="card-label">FIELD ENGINEERS</span>
+          <span class="card-symbol">◉</span>
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Maintenance Due</span>
-          <strong>{{ data.maintenanceDueEquipment }}</strong>
+        <div class="card-value">
+          {{ data.availableEngineers + data.busyEngineers + data.unavailableEngineers }}
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Deactivated</span>
-          <strong>{{ data.deactivatedEquipment }}</strong>
+        <div class="card-footer">
+          <span class="success-dot"></span>
+          <span>{{ data.availableEngineers }} available</span>
+        </div>
+      </article>
+
+      <article class="overview-card">
+        <div class="card-top">
+          <span class="card-label">MAINTENANCE DUE</span>
+          <span class="card-symbol">!</span>
         </div>
 
-      </div>
+        <div class="card-value">{{ data.maintenanceDueEquipment }}</div>
+
+        <div class="card-footer">
+          <span class="warning-dot"></span>
+          <span>Requires attention</span>
+        </div>
+      </article>
 
     </section>
 
-    <section class="dashboard-section">
+    <section class="dashboard-grid">
 
-      <div class="section-header">
-        <h2>Work Orders</h2>
-        <button type="button" (click)="openWorkOrders()">
-          View Work Orders
-        </button>
-      </div>
+      <article class="panel equipment-panel">
 
-      <div class="card-grid">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">ASSET OVERVIEW</span>
+            <h2>Equipment health</h2>
+          </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Total Work Orders</span>
-          <strong>{{ data.totalWorkOrders }}</strong>
+          <button type="button" class="text-button" (click)="openEquipment()">
+            View all
+            <span>→</span>
+          </button>
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Open</span>
-          <strong>{{ data.openWorkOrders }}</strong>
+        <div class="health-summary">
+
+          <div class="health-main">
+            <div class="health-ring">
+              <div class="health-ring-inner">
+                <strong>{{ data.operationalEquipment }}</strong>
+                <span>operational</span>
+              </div>
+            </div>
+
+            <div>
+              <strong class="health-title">Operational assets</strong>
+              <p>Equipment currently available for field operations.</p>
+            </div>
+          </div>
+
+          <div class="health-list">
+
+            <div class="health-row">
+              <div class="health-row-label">
+                <span class="health-dot operational"></span>
+                <span>Operational</span>
+              </div>
+              <strong>{{ data.operationalEquipment }}</strong>
+            </div>
+
+            <div class="health-row">
+              <div class="health-row-label">
+                <span class="health-dot maintenance"></span>
+                <span>Maintenance required</span>
+              </div>
+              <strong>{{ data.maintenanceRequiredEquipment }}</strong>
+            </div>
+
+            <div class="health-row">
+              <div class="health-row-label">
+                <span class="health-dot deactivated"></span>
+                <span>Deactivated</span>
+              </div>
+              <strong>{{ data.deactivatedEquipment }}</strong>
+            </div>
+
+          </div>
+
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">High Priority</span>
-          <strong>{{ data.highPriorityWorkOrders }}</strong>
+      </article>
+
+      <article class="panel work-order-panel">
+
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">WORKFLOW</span>
+            <h2>Work orders</h2>
+          </div>
+
+          <button type="button" class="text-button" (click)="openWorkOrders()">
+            Manage
+            <span>→</span>
+          </button>
         </div>
 
-      </div>
+        <div class="work-order-total">
+          <div>
+            <span class="metric-caption">TOTAL ORDERS</span>
+            <strong>{{ data.totalWorkOrders }}</strong>
+          </div>
+
+          <div class="priority-badge">
+            {{ data.highPriorityWorkOrders }} HIGH
+          </div>
+        </div>
+
+        <div class="work-order-stats">
+
+          <div class="workflow-stat">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon open">○</span>
+              <span>Open</span>
+            </div>
+            <strong>{{ data.openWorkOrders }}</strong>
+          </div>
+
+          <div class="workflow-stat assigned">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon assigned">●</span>
+              <span>Assigned</span>
+            </div>
+            <strong>{{ data.assignedWorkOrders }}</strong>
+          </div>
+
+          <div class="workflow-stat progress">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon progress">◐</span>
+              <span>In progress</span>
+            </div>
+            <strong>{{ data.inProgressWorkOrders }}</strong>
+          </div>
+
+          <div class="workflow-stat overdue">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon overdue">!</span>
+              <span>Overdue</span>
+            </div>
+            <strong>{{ data.overdueWorkOrders }}</strong>
+          </div>
+
+          <div class="workflow-stat priority">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon priority">▲</span>
+              <span>High priority</span>
+            </div>
+            <strong>{{ data.highPriorityWorkOrders }}</strong>
+          </div>
+
+          <div class="workflow-stat critical">
+            <div class="workflow-stat-top">
+              <span class="workflow-icon critical">!</span>
+              <span>Critical</span>
+            </div>
+            <strong>{{ data.criticalWorkOrders }}</strong>
+          </div>
+
+        </div>
+
+      </article>
 
     </section>
 
-    <section class="dashboard-section">
+    <section class="dashboard-grid">
 
-      <div class="section-header">
-        <h2>Engineers</h2>
-        <button type="button" (click)="openEngineers()">
-          View Engineers
-        </button>
-      </div>
+      <article class="panel engineer-panel">
 
-      <div class="card-grid">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">FIELD TEAM</span>
+            <h2>Engineer availability</h2>
+          </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Available</span>
-          <strong>{{ data.availableEngineers }}</strong>
+          <button type="button" class="text-button" (click)="openEngineers()">
+            View team
+            <span>→</span>
+          </button>
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Busy</span>
-          <strong>{{ data.busyEngineers }}</strong>
+        <div class="engineer-content">
+
+          <div class="availability-number">
+            <strong>{{ data.availableEngineers }}</strong>
+            <span>available now</span>
+          </div>
+
+          <div class="availability-bars">
+
+            <div class="availability-row">
+              <div class="availability-label">
+                <span>Available</span>
+                <strong>{{ data.availableEngineers }}</strong>
+              </div>
+
+              <div class="progress-track">
+                <div
+                  class="progress-fill available"
+                  [style.width.%]="data.availableEngineers * 10">
+                </div>
+              </div>
+            </div>
+
+            <div class="availability-row">
+              <div class="availability-label">
+                <span>Busy</span>
+                <strong>{{ data.busyEngineers }}</strong>
+              </div>
+
+              <div class="progress-track">
+                <div
+                  class="progress-fill busy"
+                  [style.width.%]="data.busyEngineers * 10">
+                </div>
+              </div>
+            </div>
+
+            <div class="availability-row">
+              <div class="availability-label">
+                <span>Unavailable</span>
+                <strong>{{ data.unavailableEngineers }}</strong>
+              </div>
+
+              <div class="progress-track">
+                <div
+                  class="progress-fill unavailable"
+                  [style.width.%]="data.unavailableEngineers * 10">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
-        <div class="metric-card">
-          <span class="metric-label">Unavailable</span>
-          <strong>{{ data.unavailableEngineers }}</strong>
+      </article>
+
+      <article class="panel maintenance-panel">
+
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">ATTENTION REQUIRED</span>
+            <h2>Maintenance</h2>
+          </div>
+
+          <button type="button" class="text-button" (click)="openEquipment()">
+            Equipment
+            <span>→</span>
+          </button>
         </div>
 
-      </div>
+        <div class="maintenance-content">
+
+          <div class="maintenance-number">
+            <strong>{{ data.maintenanceDueEquipment }}</strong>
+            <span>assets due for maintenance</span>
+          </div>
+
+          <div class="maintenance-details">
+
+            <div class="maintenance-item">
+              <span class="maintenance-icon">!</span>
+              <div>
+                <strong>Maintenance due</strong>
+                <span>{{ data.maintenanceDueEquipment }} equipment item(s)</span>
+              </div>
+            </div>
+
+            <div class="maintenance-item">
+              <span class="maintenance-icon muted">◈</span>
+              <div>
+                <strong>Maintenance required</strong>
+                <span>{{ data.maintenanceRequiredEquipment }} equipment item(s)</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
 
     </section>
 

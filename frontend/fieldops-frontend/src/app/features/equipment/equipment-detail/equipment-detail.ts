@@ -3,6 +3,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentRisk } from '../../../core/models/equipment-risk.model';
+import { WorkOrder } from '../../work-orders/work-order.model';
+import { WorkOrderService } from '../../../core/services/work-order.service';
+
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
@@ -14,6 +17,7 @@ export class EquipmentDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private equipmentService = inject(EquipmentService);
+  private workOrderService = inject(WorkOrderService);
 
   equipment = signal<Equipment | null>(null);
   risk = signal<EquipmentRisk | null>(null);
@@ -21,6 +25,9 @@ export class EquipmentDetail implements OnInit {
   error = signal('');
   riskLoading = signal(true);
   riskError = signal('');
+  maintenanceHistory = signal<WorkOrder[]>([]);
+  historyLoading = signal(true);
+  historyError = signal('');
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -50,6 +57,17 @@ export class EquipmentDetail implements OnInit {
       error: () => {
         this.riskError.set('Unable to load equipment risk.');
         this.riskLoading.set(false);
+      }
+    });
+
+    this.workOrderService.getMaintenanceHistory(id).subscribe({
+      next: (data) => {
+        this.maintenanceHistory.set(data);
+        this.historyLoading.set(false);
+      },
+      error: () => {
+        this.historyError.set('Unable to load maintenance history.');
+        this.historyLoading.set(false);
       }
     });
   }

@@ -10,6 +10,7 @@ import com.fieldops.repository.WorkOrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -63,11 +64,44 @@ public class DashboardService {
                         .count()
         );
 
+        response.setAssignedWorkOrders(
+                workOrders.stream()
+                        .filter(w -> "ASSIGNED".equalsIgnoreCase(w.getStatus()))
+                        .count()
+        );
+
+        response.setInProgressWorkOrders(
+                workOrders.stream()
+                        .filter(w -> "IN_PROGRESS".equalsIgnoreCase(w.getStatus()))
+                        .count()
+        );
+
+        LocalDateTime now = LocalDateTime.now();
+
+        response.setOverdueWorkOrders(
+                workOrders.stream()
+                        .filter(w -> w.getDueDate() != null)
+                        .filter(w -> w.getDueDate().isBefore(now))
+                        .filter(w ->
+                                !"COMPLETED".equalsIgnoreCase(w.getStatus()) &&
+                                !"CANCELLED".equalsIgnoreCase(w.getStatus()))
+                        .count()
+        );
+
         response.setHighPriorityWorkOrders(
                 workOrders.stream()
                         .filter(w ->
                                 "HIGH".equalsIgnoreCase(w.getPriority()) ||
                                 "CRITICAL".equalsIgnoreCase(w.getPriority()))
+                        .filter(w ->
+                                !"COMPLETED".equalsIgnoreCase(w.getStatus()) &&
+                                !"CANCELLED".equalsIgnoreCase(w.getStatus()))
+                        .count()
+        );
+
+        response.setCriticalWorkOrders(
+                workOrders.stream()
+                        .filter(w -> "CRITICAL".equalsIgnoreCase(w.getPriority()))
                         .filter(w ->
                                 !"COMPLETED".equalsIgnoreCase(w.getStatus()) &&
                                 !"CANCELLED".equalsIgnoreCase(w.getStatus()))

@@ -12,18 +12,22 @@ describe('DashboardService', () => {
   let httpTesting: HttpTestingController;
 
   const dashboardSummary: DashboardSummary = {
-    totalEquipment: 20,
-    operationalEquipment: 14,
-    maintenanceRequiredEquipment: 3,
-    deactivatedEquipment: 3,
-    totalWorkOrders: 15,
-    openWorkOrders: 8,
-    highPriorityWorkOrders: 4,
-    availableEngineers: 5,
-    busyEngineers: 3,
-    unavailableEngineers: 2,
-    maintenanceDueEquipment: 3
-  };
+  totalEquipment: 3,
+  operationalEquipment: 1,
+  maintenanceRequiredEquipment: 1,
+  deactivatedEquipment: 1,
+  totalWorkOrders: 6,
+  openWorkOrders: 0,
+  assignedWorkOrders: 3,
+  inProgressWorkOrders: 1,
+  overdueWorkOrders: 0,
+  highPriorityWorkOrders: 1,
+  criticalWorkOrders: 1,
+  availableEngineers: 4,
+  busyEngineers: 3,
+  unavailableEngineers: 2,
+  maintenanceDueEquipment: 1
+};
 
   beforeEach(() => {
     TestBed.configureTestingModule({

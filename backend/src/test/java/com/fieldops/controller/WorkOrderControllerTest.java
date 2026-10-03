@@ -250,6 +250,21 @@ class WorkOrderControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1));
         }
         @Test
+        void getMaintenanceHistory() throws Exception {
+        WorkOrderResponse response = createResponse();
+        response.setStatus("COMPLETED");
+
+        when(workOrderService.getMaintenanceHistory(10L))
+                .thenReturn(List.of(response));
+
+        mockMvc.perform(
+                get("/api/work-orders/equipment/10/history")
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].status").value("COMPLETED"));
+        }
+        @Test
         void getByEngineer() throws Exception {
         WorkOrderResponse response = createResponse();
         response.setEngineerId(5L);

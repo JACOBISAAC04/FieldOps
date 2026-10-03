@@ -1,69 +1,105 @@
 <section class="engineer-detail-page">
-  <button type="button" (click)="back()">
-    ← Back to Engineers
+
+  <button class="back-button" type="button" (click)="back()">
+    <span>←</span>
+    Back to Engineers
   </button>
 
   @if (loading()) {
-    <p>Loading engineer...</p>
+    <div class="state-card">
+      <span class="state-dot"></span>
+      Loading engineer...
+    </div>
   }
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <div class="state-card error-state">
+      {{ error() }}
+    </div>
   }
 
   @if (!loading() && engineer(); as engineer) {
-    <div class="header">
-      <div>
-        <h1>{{ engineer.name }}</h1>
-        <p>{{ engineer.email }}</p>
+
+    <div class="page-header">
+      <div class="identity">
+        <div class="engineer-avatar">
+          {{ engineer.name.charAt(0).toUpperCase() }}
+        </div>
+
+        <div>
+          <span class="eyebrow">FIELD ENGINEER</span>
+          <h1>{{ engineer.name }}</h1>
+          <p>{{ engineer.email }}</p>
+        </div>
       </div>
 
-      <span class="availability">
+      <span
+        class="availability"
+        [class.available]="engineer.availability === 'AVAILABLE'"
+        [class.busy]="engineer.availability === 'BUSY'"
+        [class.unavailable]="engineer.availability === 'UNAVAILABLE'">
+        <span></span>
         {{ engineer.availability }}
       </span>
     </div>
 
-    <div class="details">
-      <div>
-        <strong>Engineer ID</strong>
-        <span>{{ engineer.id }}</span>
+    <section class="profile-card">
+      <div class="card-heading">
+        <div>
+          <span class="eyebrow">ENGINEER PROFILE</span>
+          <h2>Engineer Information</h2>
+        </div>
       </div>
 
-      <div>
-        <strong>User ID</strong>
-        <span>{{ engineer.userId }}</span>
-      </div>
+      <div class="details">
+        <div class="detail-item">
+          <span class="detail-label">ENGINEER ID</span>
+          <span class="detail-value">{{ engineer.id }}</span>
+        </div>
 
-      <div>
-        <strong>Name</strong>
-        <span>{{ engineer.name }}</span>
-      </div>
+        <div class="detail-item">
+          <span class="detail-label">USER ID</span>
+          <span class="detail-value">{{ engineer.userId }}</span>
+        </div>
 
-      <div>
-        <strong>Email</strong>
-        <span>{{ engineer.email }}</span>
-      </div>
+        <div class="detail-item">
+          <span class="detail-label">NAME</span>
+          <span class="detail-value">{{ engineer.name }}</span>
+        </div>
 
-      <div>
-        <strong>Specialization</strong>
-        <span>{{ engineer.specialization }}</span>
-      </div>
+        <div class="detail-item">
+          <span class="detail-label">EMAIL</span>
+          <span class="detail-value">{{ engineer.email }}</span>
+        </div>
 
-      <div>
-        <strong>Location</strong>
-        <span>{{ engineer.location }}</span>
-      </div>
+        <div class="detail-item">
+          <span class="detail-label">SPECIALIZATION</span>
+          <span class="detail-value">{{ engineer.specialization }}</span>
+        </div>
 
-      <div>
-        <strong>Availability</strong>
-        <span>{{ engineer.availability }}</span>
+        <div class="detail-item">
+          <span class="detail-label">LOCATION</span>
+          <span class="detail-value location">
+            <span class="location-dot"></span>
+            {{ engineer.location }}
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">AVAILABILITY</span>
+          <span class="detail-value">{{ engineer.availability }}</span>
+        </div>
       </div>
-    </div>
+    </section>
 
     <div class="actions">
-      <button type="button" (click)="edit()">
+      <button
+        class="primary-button"
+        type="button"
+        (click)="edit()">
         Edit Engineer
       </button>
     </div>
   }
+
 </section>

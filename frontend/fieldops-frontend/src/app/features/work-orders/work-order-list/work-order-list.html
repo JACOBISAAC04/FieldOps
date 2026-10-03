@@ -1,18 +1,28 @@
 <div class="work-order-page">
 
-  <div class="page-header">
+  <div class="page-heading">
     <div>
+      <span class="eyebrow">FIELD OPERATIONS</span>
       <h1>Work Orders</h1>
       <p>Manage maintenance tasks and work orders.</p>
     </div>
 
-    <button type="button" (click)="createWorkOrder()">
-      Create Work Order
-    </button>
+    <div class="heading-actions">
+      <span class="order-count">
+        {{ filteredWorkOrders().length }} orders
+      </span>
+
+      <button
+        class="create-button"
+        type="button"
+        (click)="createWorkOrder()">
+        <span>+</span>
+        Create Work Order
+      </button>
+    </div>
   </div>
 
   <div class="filters">
-
     <select
       [value]="statusFilter()"
       (change)="onStatusChange($any($event.target).value)">
@@ -34,95 +44,132 @@
       <option value="CRITICAL">Critical</option>
     </select>
 
-    <button type="button" (click)="clearFilters()">
+    <button
+      class="clear-button"
+      type="button"
+      (click)="clearFilters()">
       Clear
     </button>
-
   </div>
 
-  <div *ngIf="loading()" class="state">
-    Loading work orders...
-  </div>
+  @if (loading()) {
+    <div class="state-card">
+      <span class="state-dot"></span>
+      Loading work orders...
+    </div>
+  }
 
-  <div *ngIf="!loading() && error()" class="state error">
-    {{ error() }}
-  </div>
+  @if (!loading() && error()) {
+    <div class="state-card error-state">
+      <div>
+        <span class="eyebrow">ERROR</span>
+        <strong>Unable to load work orders</strong>
+        <span>{{ error() }}</span>
+      </div>
+    </div>
+  }
 
-  <div
-    *ngIf="!loading() && !error() && filteredWorkOrders().length === 0"
-    class="state">
-    No work orders found.
-  </div>
+  @if (!loading() && !error() && filteredWorkOrders().length === 0) {
+    <div class="state-card empty-state">
+      <span class="empty-icon">□</span>
+      <strong>No work orders found</strong>
+      <span>Try changing your filters.</span>
+    </div>
+  }
 
-  <div
-    *ngIf="!loading() && !error() && filteredWorkOrders().length > 0"
-    class="table-container">
+  @if (!loading() && !error() && filteredWorkOrders().length > 0) {
 
-    <table>
+    <div class="work-order-table">
 
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Equipment</th>
-          <th>Engineer</th>
-          <th>Priority</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+      <div class="table-header">
+        <span>ORDER</span>
+        <span>EQUIPMENT</span>
+        <span>ENGINEER</span>
+        <span>PRIORITY</span>
+        <span>STATUS</span>
+        <span>DUE DATE</span>
+        <span></span>
+      </div>
 
-      <tbody>
+      @for (workOrder of filteredWorkOrders(); track workOrder.id) {
 
-        <tr *ngFor="let workOrder of filteredWorkOrders()">
+        <div class="work-order-row">
 
-          <td>
-            #{{ workOrder.id }}
-          </td>
+          <div class="order-id">
+            <span class="order-icon">□</span>
 
-          <td>
+            <div>
+              <strong>#{{ workOrder.id }}</strong>
+              <span>
+                {{ workOrder.description }}
+              </span>
+            </div>
+          </div>
+
+          <div class="table-value">
             {{ getEquipmentName(workOrder.equipmentId) }}
-          </td>
+          </div>
 
-          <td>
-            {{ getEngineerName(workOrder.engineerId) }}
-          </td>
+          <div class="engineer-value">
+            @if (workOrder.engineerId) {
+              <span class="engineer-dot"></span>
+              {{ getEngineerName(workOrder.engineerId) }}
+            } @else {
+              <span class="unassigned">Unassigned</span>
+            }
+          </div>
 
-          <td>
-            {{ workOrder.priority }}
-          </td>
+          <div>
+            <span
+              class="priority-badge"
+              [class.low]="workOrder.priority === 'LOW'"
+              [class.medium]="workOrder.priority === 'MEDIUM'"
+              [class.high]="workOrder.priority === 'HIGH'"
+              [class.critical]="workOrder.priority === 'CRITICAL'">
+              <span></span>
+              {{ workOrder.priority }}
+            </span>
+          </div>
 
-          <td>
-            {{ workOrder.description }}
-          </td>
-
-          <td>
-            <span class="status">
+          <div>
+            <span
+              class="status-badge"
+              [class.open]="workOrder.status === 'OPEN'"
+              [class.assigned]="workOrder.status === 'ASSIGNED'"
+              [class.in-progress]="workOrder.status === 'IN_PROGRESS'"
+              [class.completed]="workOrder.status === 'COMPLETED'"
+              [class.cancelled]="workOrder.status === 'CANCELLED'">
+              <span></span>
               {{ workOrder.status }}
             </span>
-          </td>
+          </div>
 
-          <td>
-            {{ workOrder.dueDate
-              ? (workOrder.dueDate | date:'mediumDate')
-              : 'No due date' }}
-          </td>
+          <div class="due-date">
+            @if (workOrder.dueDate) {
+              <strong>
+                {{ workOrder.dueDate | date:'mediumDate' }}
+              </strong>
+            } @else {
+              <span class="not-scheduled">
+                No due date
+              </span>
+            }
+          </div>
 
-          <td>
+          <div class="row-action">
             <button
               type="button"
               (click)="viewDetails(workOrder.id)">
               View
             </button>
-          </td>
 
-        </tr>
+            <span>→</span>
+          </div>
 
-      </tbody>
+        </div>
+      }
 
-    </table>
-
-  </div>
+    </div>
+  }
 
 </div>
