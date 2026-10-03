@@ -29,3 +29,6 @@ logging:
 analytics:
   service:
     url: http://localhost:8081
+fieldops:
+  storage:
+    document-directory: ${DOCUMENT_STORAGE_PATH:D:/FieldOps/storage/documents}

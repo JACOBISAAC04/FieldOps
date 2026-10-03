@@ -227,6 +227,149 @@
 
     </div>
 
+    <div class="documents-panel">
+
+      <div class="card-heading">
+        <span class="eyebrow">DOCUMENTS</span>
+        <h2>Work Order Documents</h2>
+        <p>
+          Attach maintenance reports, inspection reports, service documentation, and other PDF files.
+        </p>
+      </div>
+
+      <div class="document-upload">
+
+        <div class="upload-field">
+          <label for="work-order-document-file">
+            PDF FILE
+          </label>
+
+          <input
+            id="work-order-document-file"
+            type="file"
+            accept="application/pdf,.pdf"
+            (change)="onFileSelected($event)" />
+        </div>
+
+        <div class="upload-field">
+          <label for="work-order-document-type">
+            DOCUMENT TYPE
+          </label>
+
+          <select
+            id="work-order-document-type"
+            [value]="selectedDocumentType()"
+            (change)="onDocumentTypeChange($event)">
+
+            @for (type of documentTypes; track type) {
+              <option [value]="type">
+                {{ type }}
+              </option>
+            }
+
+          </select>
+        </div>
+
+        <button
+          class="primary-action upload-button"
+          type="button"
+          [disabled]="uploading() || !selectedFile()"
+          (click)="uploadDocument()">
+
+          {{ uploading() ? 'Uploading...' : 'Upload PDF' }}
+
+        </button>
+
+      </div>
+
+      @if (selectedFile(); as file) {
+        <div class="selected-file">
+          <span class="eyebrow">SELECTED FILE</span>
+          <strong>{{ file.name }}</strong>
+          <span>{{ file.size | number:'1.0-0' }} bytes</span>
+        </div>
+      }
+
+      @if (uploadError()) {
+        <div class="document-error">
+          {{ uploadError() }}
+        </div>
+      }
+
+      @if (documentsLoading()) {
+
+        <div class="document-state">
+          Loading documents...
+        </div>
+
+      } @else if (documentsError()) {
+
+        <div class="document-error">
+          {{ documentsError() }}
+        </div>
+
+      } @else if (documents().length === 0) {
+
+        <div class="document-state">
+          No documents attached to this work order.
+        </div>
+
+      } @else {
+
+        <div class="documents-list">
+
+          @for (document of documents(); track document.id) {
+
+            <div class="document-item">
+
+              <div class="document-main">
+
+                <div class="document-title-row">
+                  <h3>{{ document.fileName }}</h3>
+                </div>
+
+                <span class="document-type">
+                  {{ document.documentType }}
+                </span>
+
+                <div class="document-meta">
+                  <span>{{ document.fileSize | number:'1.0-0' }} bytes</span>
+                  <span>•</span>
+                  <span>
+                    {{ document.uploadedAt | date:'medium' }}
+                  </span>
+                </div>
+
+              </div>
+
+              <div class="document-actions">
+
+                <button
+                  class="secondary-action"
+                  type="button"
+                  (click)="downloadDocument(document.id)">
+                  View PDF
+                </button>
+
+                <button
+                  class="danger-action"
+                  type="button"
+                  (click)="deleteDocument(document.id)">
+                  Delete
+                </button>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
     @if (wo.status === 'COMPLETED') {
       <div class="terminal-message completed-message">
         <span>✓</span>

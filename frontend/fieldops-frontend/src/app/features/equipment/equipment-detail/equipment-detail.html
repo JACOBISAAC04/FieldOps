@@ -134,7 +134,8 @@
         }
       </section>
     </div>
-        <section class="panel maintenance-panel">
+
+    <section class="panel maintenance-panel">
       <div class="panel-header">
         <div>
           <span class="eyebrow">MAINTENANCE</span>
@@ -187,6 +188,137 @@
                 <span class="info-value">
                   {{ workOrder.completedAt || 'Date unavailable' }}
                 </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="panel documents-panel">
+      <div class="panel-header">
+        <div>
+          <span class="eyebrow">DOCUMENTATION</span>
+          <h2>Documents</h2>
+        </div>
+
+        @if (!documentsLoading() && !documentsError()) {
+          <span class="history-count">
+            {{ documents().length }}
+            {{ documents().length === 1 ? 'document' : 'documents' }}
+          </span>
+        }
+      </div>
+
+      <div class="document-upload">
+        <div class="upload-field">
+          <label for="document-file">PDF FILE</label>
+
+          <input
+            id="document-file"
+            type="file"
+            accept=".pdf,application/pdf"
+            (change)="onFileSelected($event)"
+          />
+        </div>
+
+        <div class="upload-field">
+          <label for="document-type">DOCUMENT TYPE</label>
+
+          <select
+            id="document-type"
+            [value]="selectedDocumentType()"
+            (change)="onDocumentTypeChange($event)"
+          >
+            @for (type of documentTypes; track type) {
+              <option [value]="type">
+                {{ type.replace('_', ' ') }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <button
+          class="primary-action upload-button"
+          type="button"
+          [disabled]="uploading() || !selectedFile()"
+          (click)="uploadDocument()"
+        >
+          {{ uploading() ? 'Uploading...' : 'Upload PDF' }}
+        </button>
+      </div>
+
+      @if (selectedFile()) {
+        <div class="selected-file">
+          <span class="info-label">SELECTED FILE</span>
+          <span class="info-value">{{ selectedFile()!.name }}</span>
+        </div>
+      }
+
+      @if (uploadError()) {
+        <div class="risk-message error-message">
+          {{ uploadError() }}
+        </div>
+      }
+
+      @if (documentsLoading()) {
+        <div class="risk-loading">
+          <span class="state-dot"></span>
+          Loading documents...
+        </div>
+      } @else if (documentsError()) {
+        <div class="risk-message error-message">
+          {{ documentsError() }}
+        </div>
+      } @else if (documents().length === 0) {
+        <div class="empty-history">
+          <span class="info-label">NO DOCUMENTS</span>
+          <p>No documents have been uploaded for this equipment.</p>
+        </div>
+      } @else {
+        <div class="documents-list">
+          @for (document of documents(); track document.id) {
+            <div class="document-item">
+              <div class="document-main">
+                <div class="document-title-row">
+                  <div>
+                    <h3>{{ document.fileName }}</h3>
+
+                    <span class="document-type">
+                      {{ document.documentType.replace('_', ' ') }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="document-meta">
+                  <span>
+                    {{ (document.fileSize / 1024 / 1024).toFixed(2) }} MB
+                  </span>
+
+                  <span>·</span>
+
+                  <span>
+                    {{ document.uploadedAt | date:'medium' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="document-actions">
+                <button
+                  class="secondary-action"
+                  type="button"
+                  (click)="downloadDocument(document.id)"
+                >
+                  View PDF
+                </button>
+
+                <button
+                  class="danger-action"
+                  type="button"
+                  (click)="deleteDocument(document.id)"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           }
