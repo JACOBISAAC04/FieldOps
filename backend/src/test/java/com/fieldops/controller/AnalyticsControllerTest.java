@@ -1,5 +1,5 @@
 package com.fieldops.controller;
-
+import com.fieldops.config.SecurityConfig;
 import com.fieldops.client.AnalyticsClient;
 import com.fieldops.dto.EquipmentResponse;
 import com.fieldops.dto.EquipmentRiskResponse;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AnalyticsController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class AnalyticsControllerTest {
 
     @Autowired

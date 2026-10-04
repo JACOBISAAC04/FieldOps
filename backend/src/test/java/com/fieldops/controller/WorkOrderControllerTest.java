@@ -1,4 +1,5 @@
 package com.fieldops.controller;
+import com.fieldops.config.SecurityConfig;
 
 import com.fieldops.dto.WorkOrderResponse;
 import com.fieldops.exception.GlobalExceptionHandler;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(WorkOrderController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class WorkOrderControllerTest {
 
     @Autowired

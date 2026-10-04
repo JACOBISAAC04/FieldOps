@@ -1,5 +1,5 @@
 package com.fieldops.controller;
-
+import com.fieldops.config.SecurityConfig;
 import com.fieldops.dto.DashboardResponse;
 import com.fieldops.service.DashboardService;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fieldops.exception.GlobalExceptionHandler;
 
 @WebMvcTest(DashboardController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class DashboardControllerTest {
 
     @Autowired

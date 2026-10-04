@@ -1,5 +1,5 @@
 package com.fieldops.controller;
-
+import com.fieldops.config.SecurityConfig;
 import com.fieldops.dto.EngineerResponse;
 import com.fieldops.exception.GlobalExceptionHandler;
 import com.fieldops.exception.ResourceNotFoundException;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EngineerController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class EngineerControllerTest {
 
     @Autowired
