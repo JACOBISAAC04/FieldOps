@@ -9,7 +9,7 @@ import { AvailableUser } from '../../../core/models/engineer.model';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './engineer-form.html',
-  styleUrl: './engineer-form.scss'
+  styleUrl: './engineer-form.css'
 })
 export class EngineerForm implements OnInit {
 

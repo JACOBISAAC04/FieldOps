@@ -1,17 +1,18 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EngineerService } from '../../../core/services/engineer.service';
 import { Engineer } from '../../../core/models/engineer.model';
-
+import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-engineer-detail',
   standalone: true,
   imports: [],
   templateUrl: './engineer-detail.html',
-  styleUrl: './engineer-detail.scss'
+  styleUrl: './engineer-detail.css'
 })
 export class EngineerDetail implements OnInit {
 
+  protected authService = inject(AuthService);
   engineer = signal<Engineer | null>(null);
   loading = signal(true);
   error = signal('');

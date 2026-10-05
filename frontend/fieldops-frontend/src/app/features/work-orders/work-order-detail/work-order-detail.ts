@@ -14,7 +14,7 @@ import { Document } from '../../../core/models/document.model';
   standalone: true,
   imports: [FormsModule, DatePipe, DecimalPipe],
   templateUrl: './work-order-detail.html',
-  styleUrl: './work-order-detail.scss'
+  styleUrl: './work-order-detail.css'
 })
 export class WorkOrderDetail implements OnInit {
 

@@ -9,7 +9,7 @@ import { EquipmentService } from '../../../core/services/equipment.service';
   standalone: true,
   imports: [FormsModule, RouterLink],
   templateUrl: './equipment-form.html',
-  styleUrl: './equipment-form.scss'
+  styleUrl: './equipment-form.css'
 })
 export class EquipmentForm implements OnInit {
   private equipmentService = inject(EquipmentService);

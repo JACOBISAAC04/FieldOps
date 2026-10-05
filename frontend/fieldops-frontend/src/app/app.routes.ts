@@ -9,59 +9,92 @@ import { EngineerList } from './features/engineers/engineer-list/engineer-list';
 import { EngineerDetail } from './features/engineers/engineer-detail/engineer-detail';
 import { EngineerForm } from './features/engineers/engineer-form/engineer-form';
 import { Dashboard } from './features/dashboard/dashboard';
-
+import { Login } from './features/auth/login/login';
+import { authGuard } from './core/guards/auth-guard';
+import { roleGuard } from './core/guards/role-guard';
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
-  },
+  { path: 'login', component: Login },
+
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
   {
     path: 'dashboard',
-    component: Dashboard
+    component: Dashboard,
+    canActivate: [authGuard]
   },
+
   {
     path: 'equipment',
-    component: EquipmentList
+    component: EquipmentList,
+    canActivate: [authGuard]
   },
+
   {
     path: 'equipment/new',
-    component: EquipmentForm
+    component: EquipmentForm,
+    canActivate: [authGuard]
   },
+
   {
     path: 'equipment/:id/edit',
-    component: EquipmentForm
+    component: EquipmentForm,
+    canActivate: [authGuard]
   },
+
   {
     path: 'equipment/:id',
-    component: EquipmentDetail
+    component: EquipmentDetail,
+    canActivate: [authGuard]
   },
+
   {
-    path: 'engineers',
-    component: EngineerList
-  },
-  {
-    path: 'engineers/new',
-    component: EngineerForm
-  },
-  {
-    path: 'engineers/:id/edit',
-    component: EngineerForm
-  },
-  {
-    path: 'engineers/:id',
-    component: EngineerDetail
-  },
+  path: 'engineers',
+  component: EngineerList,
+  canActivate: [
+    authGuard,
+    roleGuard(['ADMIN', 'ENGINEER', 'FIELD_ENGINEER'])
+  ]
+},
+{
+  path: 'engineers/new',
+  component: EngineerForm,
+  canActivate: [
+    authGuard,
+    roleGuard(['ADMIN'])
+  ]
+},
+{
+  path: 'engineers/:id/edit',
+  component: EngineerForm,
+  canActivate: [
+    authGuard,
+    roleGuard(['ADMIN'])
+  ]
+},
+{
+  path: 'engineers/:id',
+  component: EngineerDetail,
+  canActivate: [
+    authGuard,
+    roleGuard(['ADMIN', 'ENGINEER', 'FIELD_ENGINEER'])
+  ]
+},
+
   {
     path: 'work-orders',
-    component: WorkOrderList
+    component: WorkOrderList,
+    canActivate: [authGuard]
   },
+
   {
     path: 'work-orders/new',
-    component: WorkOrderForm
+    component: WorkOrderForm,
+    canActivate: [authGuard]
   },
+
   {
     path: 'work-orders/:id',
-    component: WorkOrderDetail
+    component: WorkOrderDetail,
+    canActivate: [authGuard]
   }
 ];

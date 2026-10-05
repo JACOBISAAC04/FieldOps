@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -38,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authorizationHeader =
                 request.getHeader("Authorization");
+        
 
         if (authorizationHeader == null ||
                 !authorizationHeader.startsWith("Bearer ")) {
@@ -73,9 +73,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
+                    
                 }
             }
-        } catch (Exception ignored) {
+       } catch (Exception ignored) {
         }
 
         filterChain.doFilter(request, response);

@@ -9,7 +9,7 @@ import { Engineer } from '../../../core/models/engineer.model';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './engineer-list.html',
-  styleUrl: './engineer-list.scss'
+  styleUrl: './engineer-list.css'
 })
 export class EngineerList implements OnInit {
 

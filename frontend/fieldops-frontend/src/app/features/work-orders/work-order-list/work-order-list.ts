@@ -14,7 +14,7 @@ import { Engineer } from '../../../core/models/engineer.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './work-order-list.html',
-  styleUrl: './work-order-list.scss'
+  styleUrl: './work-order-list.css'
 })
 export class WorkOrderList implements OnInit {
 

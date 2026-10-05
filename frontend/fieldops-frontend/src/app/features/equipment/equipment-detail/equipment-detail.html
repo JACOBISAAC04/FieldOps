@@ -326,21 +326,23 @@
       }
     </section>
 
-    <div class="actions">
-      <a
-        class="primary-action"
-        [routerLink]="['/equipment', equipment()!.id, 'edit']"
-      >
-        Edit Equipment
-      </a>
+    @if (authService.hasRole('ADMIN')) {
+      <div class="actions">
+        <a
+          class="primary-action"
+          [routerLink]="['/equipment', equipment()!.id, 'edit']"
+        >
+          Edit Equipment
+        </a>
 
-      <button
-        class="secondary-action"
-        type="button"
-        (click)="deactivate()"
-      >
-        Deactivate Equipment
-      </button>
-    </div>
+        <button
+          class="secondary-action"
+          type="button"
+          (click)="deactivate()"
+        >
+          Deactivate Equipment
+        </button>
+      </div>
+    }
   }
 </section>

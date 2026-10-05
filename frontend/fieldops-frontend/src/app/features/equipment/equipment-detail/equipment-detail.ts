@@ -8,13 +8,14 @@ import { WorkOrder } from '../../work-orders/work-order.model';
 import { WorkOrderService } from '../../../core/services/work-order.service';
 import { Document } from '../../../core/models/document.model';
 import { DocumentService } from '../../../core/services/document.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
   imports: [RouterLink, DatePipe],
   templateUrl: './equipment-detail.html',
-  styleUrl: './equipment-detail.scss'
+  styleUrl: './equipment-detail.css'
 })
 export class EquipmentDetail implements OnInit {
   private route = inject(ActivatedRoute);
@@ -22,6 +23,7 @@ export class EquipmentDetail implements OnInit {
   private equipmentService = inject(EquipmentService);
   private workOrderService = inject(WorkOrderService);
   private documentService = inject(DocumentService);
+  protected authService = inject(AuthService);
 
   equipment = signal<Equipment | null>(null);
   risk = signal<EquipmentRisk | null>(null);

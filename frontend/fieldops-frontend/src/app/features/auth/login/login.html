@@ -1,0 +1,109 @@
+<div class="login-page">
+  <div class="ambient-grid"></div>
+  <div class="scan-line"></div>
+
+  <div class="orb orb-one"></div>
+  <div class="orb orb-two"></div>
+
+  <div class="system-ring ring-one"></div>
+  <div class="system-ring ring-two"></div>
+
+  <div class="login-container">
+    <div class="brand-section">
+      <div class="brand-mark">F</div>
+
+      <div class="brand-text">
+        <div class="brand-name">FIELDOPS</div>
+        <div class="brand-subtitle">FIELD OPERATIONS PLATFORM</div>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <div class="card-line"></div>
+
+      <div class="login-header">
+        <span class="eyebrow">SECURE ACCESS</span>
+        <h1>Welcome back</h1>
+        <p>Sign in to access your operations workspace.</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">EMAIL ADDRESS</label>
+
+          <div class="input-wrapper">
+            
+
+            <input
+              id="email"
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="Enter your email"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">PASSWORD</label>
+
+          <div class="input-wrapper">
+            
+
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePassword()"
+            >
+              {{ showPassword ? 'HIDE' : 'SHOW' }}
+            </button>
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-message">
+            <span>!</span>
+            {{ errorMessage }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="login-button"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+            <span class="loader"></span>
+            AUTHENTICATING...
+          } @else {
+            SIGN IN
+            <span class="button-arrow">→</span>
+          }
+        </button>
+      </form>
+
+      <div class="security-status">
+        <span class="status-dot"></span>
+        <span>SECURE CONNECTION</span>
+      </div>
+    </div>
+
+    <div class="system-footer">
+      <span>FIELDOPS</span>
+      <span class="separator">•</span>
+      <span>OPERATIONS MANAGEMENT</span>
+      <span class="separator">•</span>
+      <span>v1.0</span>
+    </div>
+  </div>
+</div>

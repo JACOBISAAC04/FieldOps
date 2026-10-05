@@ -8,7 +8,7 @@ import { DashboardSummary } from '../../core/models/dashboard.model';
   standalone: true,
   imports: [],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {
 

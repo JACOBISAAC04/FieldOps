@@ -1,7 +1,7 @@
 <section class="engineer-detail-page">
 
   <button class="back-button" type="button" (click)="back()">
-    <span>←</span>
+    
     Back to Engineers
   </button>
 
@@ -92,14 +92,16 @@
       </div>
     </section>
 
-    <div class="actions">
-      <button
-        class="primary-button"
-        type="button"
-        (click)="edit()">
-        Edit Engineer
-      </button>
-    </div>
+    @if (authService.hasRole('ADMIN')) {
+      <div class="actions">
+        <button
+          class="primary-button"
+          type="button"
+          (click)="edit()">
+          Edit Engineer
+        </button>
+      </div>
+    }
   }
 
 </section>

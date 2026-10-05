@@ -13,7 +13,7 @@ import { WorkOrderRequest } from '../work-order.model';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './work-order-form.html',
-  styleUrl: './work-order-form.scss'
+  styleUrl: './work-order-form.css'
 })
 export class WorkOrderForm implements OnInit {
 

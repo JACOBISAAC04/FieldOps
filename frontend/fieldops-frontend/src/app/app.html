@@ -1,74 +1,89 @@
-<div class="app-shell">
-  <aside class="app-sidebar">
-    <div class="sidebar-brand">
-      <a routerLink="/dashboard">
-        <span class="brand-mark">F</span>
-        <span class="brand-name">FieldOps</span>
-      </a>
-    </div>
-
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <span class="nav-label">Workspace</span>
-
-        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <span class="nav-icon">⌂</span>
-          <span>Dashboard</span>
-        </a>
-
-        <a routerLink="/equipment" routerLinkActive="active">
-          <span class="nav-icon">◈</span>
-          <span>Equipment</span>
-        </a>
-
-        <a routerLink="/engineers" routerLinkActive="active">
-          <span class="nav-icon">◉</span>
-          <span>Engineers</span>
-        </a>
-
-        <a routerLink="/work-orders" routerLinkActive="active">
-          <span class="nav-icon">□</span>
-          <span>Work Orders</span>
+@if (isLoginPage) {
+  <router-outlet />
+} @else {
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <div class="sidebar-brand">
+        <a routerLink="/dashboard">
+          <span class="brand-mark">F</span>
+          <span class="brand-name">FieldOps</span>
         </a>
       </div>
 
-      <div class="nav-section sidebar-bottom">
-        <span class="nav-label">System</span>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <span class="nav-label">Workspace</span>
 
-        <a>
-          <span class="nav-icon">?</span>
-          <span>Help</span>
-        </a>
-      </div>
-    </nav>
+          <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
+          </a>
 
-    <div class="sidebar-footer">
-      <div class="user-avatar">JI</div>
+          <a routerLink="/equipment" routerLinkActive="active">
+            <span class="nav-icon">◈</span>
+            <span>Equipment</span>
+          </a>
 
-      <div class="user-info">
-        <span class="user-name">Jacob Isaac</span>
-        <span class="user-role">Field Engineer</span>
-      </div>
-    </div>
-  </aside>
+         @if (authService.hasAnyRole(['ADMIN', 'ENGINEER', 'FIELD_ENGINEER'])) {
+            <a routerLink="/engineers" routerLinkActive="active">
+              <span class="nav-icon">◉</span>
+              <span>Engineers</span>
+            </a>
+          }
 
-  <div class="app-main">
-    <header class="app-header">
-      <div class="header-left">
-        <span class="header-title">Operations</span>
-      </div>
+          <a routerLink="/work-orders" routerLinkActive="active">
+            <span class="nav-icon">□</span>
+            <span>Work Orders</span>
+          </a>
+        </div>
 
-      <div class="header-right">
-        <button class="header-icon" type="button" aria-label="Notifications">
-          ♧
-        </button>
+        <div class="nav-section sidebar-bottom">
+          <span class="nav-label">System</span>
 
-        <div class="header-avatar">JI</div>
-      </div>
-    </header>
+          <a>
+            <span class="nav-icon">?</span>
+            <span>Help</span>
+          </a>
+        </div>
+      </nav>
 
-    <main class="app-content">
-      <router-outlet />
-    </main>
+      <div class="sidebar-footer">
+  <div class="user-avatar">{{ userInitials }}</div>
+
+  <div class="user-info">
+    <span class="user-name">{{ currentUser?.name }}</span>
+    <span class="user-role">{{ userRole }}</span>
   </div>
+
+  <button
+    class="logout-button"
+    type="button"
+    (click)="logout()"
+    aria-label="Logout"
+  >
+    ↪
+  </button>
 </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-header">
+        <div class="header-left">
+          <span class="header-title">Operations</span>
+        </div>
+
+        <div class="header-right">
+          <button class="header-icon" type="button" aria-label="Notifications">
+            ♧
+          </button>
+
+          <div class="header-avatar">{{ userInitials }}</div>
+        </div>
+      </header>
+
+      <main class="app-content">
+        <router-outlet />
+      </main>
+    </div>
+  </div>
+}

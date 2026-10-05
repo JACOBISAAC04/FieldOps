@@ -1,5 +1,5 @@
 package com.fieldops.config;
-
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import com.fieldops.repository.UserRepository;
 import com.fieldops.service.JwtService;
@@ -38,10 +38,13 @@ public class ProductionSecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> {})
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
 
                 .requestMatchers("/api/users/**")
@@ -50,14 +53,23 @@ public class ProductionSecurityConfig {
                 .requestMatchers("/api/admin/**")
                 .hasRole("ADMIN")
 
-                .requestMatchers("/api/equipment/**")
+                .requestMatchers(HttpMethod.POST, "/api/equipment")
+                .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/api/equipment/**")
+                .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/equipment/**")
+                .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.GET, "/api/equipment/**")
                 .hasAnyRole("ADMIN", "ENGINEER", "FIELD_ENGINEER", "OPERATIONS")
 
                 .requestMatchers("/api/work-orders/**")
                 .hasAnyRole("ADMIN", "ENGINEER", "FIELD_ENGINEER", "OPERATIONS")
 
                 .requestMatchers("/api/analytics/**")
-                .hasAnyRole("ADMIN", "OPERATIONS")
+                .hasAnyRole("ADMIN", "ENGINEER", "FIELD_ENGINEER", "OPERATIONS")
 
                 .anyRequest().authenticated()
             )
@@ -73,23 +85,28 @@ public class ProductionSecurityConfig {
 
         return http.build();
     }
-    @Bean
+   @Bean
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(
-        List.of("http://localhost:4200")
-    );
+    configuration.setAllowedOriginPatterns(List.of(
+            "http://localhost:4200",
+            "http://127.0.0.1:4200"
+    ));
 
-    configuration.setAllowedMethods(
-        List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-    );
+    configuration.setAllowedMethods(List.of(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+    ));
 
-    configuration.setAllowedHeaders(
-        List.of("Authorization", "Content-Type")
-    );
-
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setExposedHeaders(List.of("Authorization"));
     configuration.setAllowCredentials(false);
+    configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();
