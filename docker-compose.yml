@@ -38,10 +38,12 @@ services:
       analytics:
         condition: service_started
     environment:
+      SPRING_PROFILES_ACTIVE: production
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fieldops
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       FIELDOPS_JWT_SECRET: ${FIELDOPS_JWT_SECRET}
+      FIELDOPS_CORS_ORIGINS: ${FIELDOPS_CORS_ORIGINS:-http://localhost}
       ANALYTICS_SERVICE_URL: http://analytics:8081
       DOCUMENT_STORAGE_PATH: /app/storage/documents
     ports:

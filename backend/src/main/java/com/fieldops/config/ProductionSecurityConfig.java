@@ -89,10 +89,17 @@ public class ProductionSecurityConfig {
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOriginPatterns(List.of(
-            "http://localhost:4200",
-            "http://127.0.0.1:4200"
-    ));
+    String allowedOrigins = System.getenv("FIELDOPS_CORS_ORIGINS");
+
+    if (allowedOrigins == null || allowedOrigins.isBlank()) {
+        throw new IllegalStateException(
+                "FIELDOPS_CORS_ORIGINS environment variable is not configured"
+        );
+    }
+
+    configuration.setAllowedOriginPatterns(
+            List.of(allowedOrigins.split(","))
+    );
 
     configuration.setAllowedMethods(List.of(
             "GET",
