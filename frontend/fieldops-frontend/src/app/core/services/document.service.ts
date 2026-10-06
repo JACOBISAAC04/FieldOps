@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Document } from '../models/document.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/documents';
+  private readonly apiUrl = environment.apiUrl + '/documents';
 
   uploadForEquipment(
     equipmentId: number,

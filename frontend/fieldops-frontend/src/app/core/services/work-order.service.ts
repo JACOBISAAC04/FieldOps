@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WorkOrder, WorkOrderRequest } from '../../features/work-orders/work-order.model';
-
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class WorkOrderService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/work-orders';
+  private readonly apiUrl = environment.apiUrl + '/work-orders';
 
   constructor(private http: HttpClient) {}
 

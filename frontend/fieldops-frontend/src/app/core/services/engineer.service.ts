@@ -6,14 +6,15 @@ import {
   EngineerRequest,
   AvailableUser
 } from '../models/engineer.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngineerService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/engineers';
-  private readonly usersApiUrl = 'http://localhost:8080/api/users';
+  private readonly apiUrl = environment.apiUrl + '/engineers';
+  private readonly usersApiUrl = environment.apiUrl + '/users';
 
   constructor(private http: HttpClient) {}
 

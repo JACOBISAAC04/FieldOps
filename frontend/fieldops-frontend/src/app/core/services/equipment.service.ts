@@ -3,13 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Equipment, EquipmentRequest } from '../models/equipment.model';
 import { EquipmentRisk } from '../models/equipment-risk.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EquipmentService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/equipment';
+  private readonly apiUrl = environment.apiUrl + '/equipment';
 
   getAllEquipment(filters?: {
     status?: string;
@@ -43,7 +44,7 @@ export class EquipmentService {
   }
   getEquipmentRisk(id: number): Observable<EquipmentRisk> {
     return this.http.get<EquipmentRisk>(
-      `http://localhost:8080/api/analytics/equipment/${id}`
+      `${environment.apiUrl}/api/analytics/equipment/${id}`
     );
   }
 
