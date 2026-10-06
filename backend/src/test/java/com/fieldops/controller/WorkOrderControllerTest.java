@@ -303,4 +303,38 @@ class WorkOrderControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
     }
+    @Test
+        void createWorkOrderRejectsDescriptionTooLong() throws Exception {
+        String description = "a".repeat(1001);
+
+        String request = """
+                {
+                        "equipmentId": 10,
+                        "priority": "HIGH",
+                        "description": "%s"
+                }
+                """.formatted(description);
+
+        mockMvc.perform(post("/api/work-orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest());
+        }
+        @Test
+void createWorkOrderRejectsPriorityTooLong() throws Exception {
+    String priority = "a".repeat(21);
+
+    String request = """
+            {
+                "equipmentId": 10,
+                "priority": "%s",
+                "description": "Inspect engine"
+            }
+            """.formatted(priority);
+
+    mockMvc.perform(post("/api/work-orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(request))
+            .andExpect(status().isBadRequest());
+}
 }

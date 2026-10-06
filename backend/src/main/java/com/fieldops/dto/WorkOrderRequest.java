@@ -4,8 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.Size;
 
 public class WorkOrderRequest {
+
+
 
     @NotNull
     private Long equipmentId;
@@ -13,9 +16,11 @@ public class WorkOrderRequest {
     private Long engineerId;
 
     @NotBlank
+    @Size(max = 20)
     private String priority;
 
     @NotBlank
+    @Size(max = 1000)
     private String description;
 
     
