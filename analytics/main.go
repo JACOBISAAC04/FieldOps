@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,6 +16,8 @@ func main() {
 		handlers.EquipmentRiskHandler,
 	)
 
+	http.HandleFunc("/health", healthHandler)
+
 	port := ":8081"
 
 	fmt.Println(
@@ -22,4 +25,11 @@ func main() {
 	)
 
 	log.Fatal(http.ListenAndServe(port, nil))
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "UP",
+	})
 }
