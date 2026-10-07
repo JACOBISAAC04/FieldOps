@@ -26,5 +26,10 @@ fieldops:
 
 logging:
   level:
+    root: INFO
     org.springframework: INFO
     org.hibernate.SQL: WARN
+    org.flywaydb: INFO
+    com.zaxxer.hikari: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
