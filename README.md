@@ -2,89 +2,57 @@
 
 FieldOps is a full-stack equipment and maintenance management platform designed for industrial field operations.
 
-The system helps operations teams manage equipment, field engineers, maintenance work orders, maintenance history, equipment status, and operational risk.
+It provides equipment management, engineer management, maintenance work orders, operational dashboards, document management, equipment risk analytics, authentication, role-based access control, and production monitoring.
 
-## Objectives
+The project was built as a production-style full-stack engineering project with a Java Spring Boot backend, Angular frontend, PostgreSQL database, and independently deployable Go analytics service.
 
-FieldOps is being built as a production-style portfolio project to demonstrate:
+## Live Deployment
 
-- Java and Spring Boot backend development
-- Angular frontend development
-- PostgreSQL and SQL
-- JPA and Hibernate
-- REST API design
-- Go service development
-- Service-to-service integration
-- Unit and integration testing
-- Test-driven development practices
-- Docker-based development and deployment
-- Git and GitHub workflows
-- GitHub Actions CI
-- API documentation
-- Agile software development practices
-- Debugging and regression testing
+- Frontend: https://fieldops-frontend-djmy.onrender.com
+- Backend: https://fieldops-backend-z3ob.onrender.com
+- Backend Health: https://fieldops-backend-z3ob.onrender.com/actuator/health
+- Analytics Health: https://fieldops-analytics.onrender.com/health
 
 ## System Architecture
 
-The application follows this flow:
-
 ```text
-Angular Frontend
-        |
-        | REST API
-        v
-Java Spring Boot Backend
-        |
-        +---- JPA / Hibernate
-        |
-        v
-PostgreSQL Database
+                         GitHub
+                            |
+                    GitHub Actions CI
+                            |
+                    Docker / Deployment
+                            |
+        +-------------------+-------------------+
+        |                   |                   |
+        v                   v                   v
+ Angular Frontend     Spring Boot Backend    Go Analytics
+    + Nginx                 :8080               :8081
+        |                     |                   |
+        | REST API            | JPA / Hibernate   |
+        +-------------------->|                   |
+                              v                   |
+                         PostgreSQL <-------------+
+                         / Supabase
 
-Java Spring Boot Backend
-        |
-        | REST integration
-        v
-Go Analytics Service
-        |
-        v
-Equipment Risk Calculation
+                         Production
+                    Render + Supabase
 ```
 
-The Java backend is the primary business application. It handles users, equipment, engineers, work orders, maintenance records, authentication, and business rules.
+The Spring Boot backend is the primary business application. It manages authentication, users, equipment, engineers, work orders, maintenance records, documents, dashboards, and business rules.
 
-The Go service is an independently deployable analytics service responsible for equipment risk assessment.
+The Go analytics service is independently deployable and provides equipment risk analysis through a REST API.
 
-## Main User Roles
+## Key Features
 
-### Administrator
+### Authentication and Authorization
 
-Administrators manage:
-
-- Equipment
-- Engineers
-- Users
-- System configuration
-
-### Field Engineer
-
-Field engineers can:
-
-- View assigned work orders
-- Update work progress
-- Record maintenance activities
-- Complete assigned tasks
-
-### Operations User
-
-Operations users can:
-
-- Monitor equipment
-- Create maintenance work orders
-- View operational dashboards
-- Monitor equipment status
-- Review maintenance and risk information
-
-## Core Features
+- JWT-based authentication
+- Role-based access control
+- Administrator, engineer, and operations roles
+- Protected REST endpoints
+- Production security configuration
+- Stateless authentication
+- CORS configuration for the production frontend
 
 ### Equipment Management
 
@@ -94,32 +62,38 @@ Operations users can:
 - Update equipment
 - Deactivate equipment
 - View maintenance history
-- Identify equipment approaching maintenance
+- Track maintenance status
+- Equipment risk information
 
 ### Engineer Management
 
-- Manage engineer profiles
-- Track specialization
-- Track location
-- Track availability
-- View current workload
-- Assign engineers to work orders
+- Engineer profiles
+- Engineer specialization
+- Engineer location
+- Availability tracking
+- Workload tracking
+- Engineer assignment to work orders
 
 ### Work Order Management
 
-Work orders support the following lifecycle:
+Work orders follow a controlled lifecycle:
 
 ```text
-OPEN -> ASSIGNED -> IN_PROGRESS -> COMPLETED
+OPEN
+  |
+  v
+ASSIGNED
+  |
+  v
+IN_PROGRESS
+  |
+  v
+COMPLETED
 ```
 
-A work order may also be:
+Work orders can also be cancelled.
 
-```text
-CANCELLED
-```
-
-Work orders contain:
+Each work order can contain:
 
 - Equipment
 - Assigned engineer
@@ -129,32 +103,26 @@ Work orders contain:
 - Creation date
 - Due date
 - Completion date
+- Maintenance information
 
 ### Dashboard
 
-The dashboard provides:
+The dashboard provides operational visibility including:
 
 - Equipment totals
-- Equipment status summary
+- Equipment status
 - Open work orders
 - High-priority work orders
 - Engineer availability
 - Recent work orders
 - Maintenance due information
-- Equipment risk summary
+- Equipment risk information
 
 ### Equipment Risk Analytics
 
-The Go analytics service evaluates equipment risk.
+The Go analytics service evaluates equipment conditions and returns risk information.
 
-The service considers equipment-related conditions and returns information such as:
-
-- Equipment ID
-- Risk level
-- Whether maintenance is due
-- Risk reasons
-
-Example:
+Example response:
 
 ```json
 {
@@ -168,6 +136,28 @@ Example:
 }
 ```
 
+### Document Management
+
+FieldOps supports document management associated with operational records.
+
+The application includes document upload and retrieval functionality as part of the maintenance workflow.
+
+### Health Monitoring
+
+Spring Boot Actuator provides production health monitoring:
+
+```text
+GET /actuator/health
+```
+
+The Go analytics service provides:
+
+```text
+GET /health
+```
+
+Both services expose health information for deployment monitoring.
+
 ## Technology Stack
 
 ### Frontend
@@ -176,6 +166,7 @@ Example:
 - TypeScript
 - HTML
 - CSS
+- Nginx
 
 ### Backend
 
@@ -183,20 +174,25 @@ Example:
 - Spring Boot
 - Spring Data JPA
 - Hibernate
+- Spring Security
+- JWT
 - REST APIs
 - Maven
+- Spring Boot Actuator
 
 ### Analytics Service
 
 - Go
-- HTTP API
-- Go standard testing tools
+- REST API
+- Go standard library
+- Go testing
 
 ### Database
 
 - PostgreSQL
 - SQL
-- Database migrations
+- JPA / Hibernate
+- Flyway database migrations
 
 ### Testing
 
@@ -204,8 +200,9 @@ Example:
 - Mockito
 - Spring Boot Test
 - MockMvc
-- Angular TestBed
+- Angular testing
 - Go testing
+- Integration testing
 - API testing
 
 ### DevOps
@@ -215,46 +212,45 @@ Example:
 - Docker
 - Docker Compose
 - GitHub Actions
+- Render
+- Supabase
 
 ## Repository Structure
 
 ```text
 FieldOps/
 │
-├── frontend/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── analytics/
 │
 ├── backend/
 │
-├── analytics-service/
-│
 ├── database/
-│   ├── migrations/
-│   └── seed/
-│
-├── docs/
-│   ├── requirements/
-│   ├── architecture/
-│   ├── testing/
-│   └── deployment/
-│
-├── api/
-│   └── postman/
 │
 ├── docker/
-│   └── nginx/
 │
-├── .github/
-│   └── workflows/
+├── docs/
+│   ├── architecture/
+│   ├── deployment/
+│   ├── requirements/
+│   └── testing/
 │
+├── frontend/
+│
+├── storage/
+│
+├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
-├── docker-compose.yml
 └── README.md
 ```
 
 ## Backend Architecture
 
-The Java backend follows a layered architecture:
+The Spring Boot backend follows a layered architecture:
 
 ```text
 Controller
@@ -269,201 +265,358 @@ Repository
 PostgreSQL
 ```
 
-### Controller
+Supporting layers include:
 
-Handles:
+- DTO
+- Mapper
+- Entity
+- Exception Handling
+- Security
+- Integration Clients
+
+### Controllers
+
+Handle:
 
 - HTTP requests
 - Request validation
+- REST endpoints
 - HTTP responses
-- REST API endpoints
 
-### Service
+### Services
 
-Handles:
+Handle:
 
 - Business rules
 - Transactions
 - Application logic
-- Integration with the Go analytics service
+- Cross-domain operations
+- Analytics service integration
 
-### Repository
+### Repositories
 
-Handles:
+Handle:
 
 - Database access
 - JPA queries
 - Entity persistence
 
-### Entity
+### Entities
 
-Represents persistent database data using JPA and Hibernate.
+Represent persistent database data using JPA and Hibernate.
 
-### DTO
+### DTOs
 
-Defines request and response payloads separately from database entities.
+Separate API request and response models from persistence entities.
 
-### Mapper
+### Security
 
-Converts between entities and DTOs.
-
-### Exception
-
-Provides centralized error handling.
+Production security is implemented using Spring Security and JWT authentication with role-based authorization.
 
 ## Database
 
-The primary database is PostgreSQL.
+PostgreSQL is used as the primary relational database.
 
-Core tables include:
-
-- users
-- engineers
-- equipment
-- work_orders
-- maintenance_records
-
-The database uses:
+The system uses:
 
 - Primary keys
 - Foreign keys
 - Constraints
 - Indexes
 - Transactions
-- Versioned migrations
+- Versioned Flyway migrations
+- JPA / Hibernate
 
 Database schema changes are maintained through migration files.
 
-## Development Approach
+## Analytics Architecture
 
-FieldOps is developed incrementally.
+The analytics service is implemented separately in Go.
 
-The major development phases are:
+```text
+Spring Boot Backend
+        |
+        | REST
+        v
+Go Analytics Service
+        |
+        v
+Risk Calculation
+        |
+        v
+Equipment Risk Response
+```
 
-1. Project foundation
-2. Database and backend foundation
-3. Equipment management
-4. Engineers and work orders
-5. Angular dashboard and workflows
-6. Go analytics service
-7. Java-Go integration
-8. Testing and regression
-9. Docker and CI refinement
-10. Deployment and final documentation
+The service can be deployed independently from the Java backend.
 
-Each phase is completed and verified before moving to the next phase.
+## Testing
 
-## Testing Approach
+FieldOps uses multiple levels of automated testing.
 
-Testing follows a TDD-oriented workflow:
+### Backend
 
-1. Define expected behavior
-2. Write a failing test
-3. Implement the smallest solution
-4. Refactor
-5. Run the relevant test suite
-6. Run regression tests
+The backend includes:
 
-Testing will cover:
+- Unit tests
+- Controller tests
+- Service tests
+- Repository integration tests
+- Security integration tests
+- Analytics integration tests
 
-- Backend business logic
-- REST APIs
-- Database integration
-- Angular components and services
-- Go analytics logic
-- Go HTTP handlers
-- API behavior
-- Regression scenarios
+The current backend test suite contains:
 
-## CI
+```text
+133 tests
+0 failures
+0 errors
+0 skipped
+```
 
-GitHub Actions will validate:
+### Frontend
 
-- Java build and tests
-- Angular dependencies, tests, and build
-- Go tests and build
-- Docker image builds during final validation
+Angular tests cover frontend components, services, guards, and application behavior.
+
+### Go
+
+The analytics service includes tests for:
+
+- Risk calculation
+- Service logic
+- HTTP handlers
+- Health endpoint
+
+### Regression Testing
+
+Full test suites are run after major implementation and infrastructure changes to ensure existing functionality remains stable.
+
+## CI/CD
+
+GitHub Actions validates the project through automated CI.
+
+The CI workflow covers the major application components and verifies builds and tests before changes are considered ready.
+
+The project also uses Docker-based builds to keep development and deployment environments consistent.
 
 ## Docker
 
-Docker Compose will eventually run the main application components:
+FieldOps supports containerized execution for the main services.
 
-- Angular frontend
-- Java Spring Boot backend
-- Go analytics service
-- PostgreSQL database
-- Optional reverse proxy
+The architecture includes:
 
-The intended local command is:
+```text
+Angular / Nginx
+       |
+Spring Boot
+       |
+Go Analytics
+       |
+PostgreSQL
+```
+
+The local containerized environment can be started with:
 
 ```bash
 docker compose up --build
 ```
 
+## Production Deployment
+
+The production deployment uses:
+
+```text
+GitHub
+   |
+GitHub Actions
+   |
+Docker
+   |
+Render
+   |
++-----------------------+
+| Angular / Nginx       |
+| Spring Boot           |
+| Go Analytics          |
++-----------------------+
+           |
+        Supabase
+       PostgreSQL
+```
+
+Production infrastructure includes:
+
+- Render for application services
+- Supabase PostgreSQL
+- HTTPS
+- Production environment variables
+- Spring Boot Actuator
+- Render health checks
+- Application logging
+- Service health monitoring
+
+The backend health check is:
+
+```text
+/actuator/health
+```
+
+The analytics health check is:
+
+```text
+/health
+```
+
+## Observability
+
+Production logging is configured for the Spring Boot backend.
+
+The production configuration includes:
+
+- Application logs
+- Spring Framework logs
+- Flyway logs
+- Hikari connection pool logs
+- Structured console log formatting
+- Health monitoring through Spring Boot Actuator
+
+Sensitive health details are not exposed through the public health endpoint.
+
 ## Documentation
 
 Project documentation is maintained under `docs/`.
 
-Documentation will cover:
+```text
+docs/
+├── architecture/
+│   ├── database-design.md
+│   └── system-architecture.md
+│
+├── deployment/
+│   └── environment-setup.md
+│
+├── requirements/
+│   └── SRS.md
+│
+└── testing/
+    └── testing-strategy.md
+```
+
+The documentation covers:
 
 - Requirements
 - System architecture
 - Database design
+- Environment setup
 - Testing strategy
 - Deployment
-- Environment setup
-- API usage
 
-## Project Quality Goals
+## Development Workflow
 
-FieldOps should be:
+The project was developed incrementally through defined engineering phases.
 
-- Maintainable
-- Testable
-- Reliable
-- Secure
-- Observable
-- Understandable
-- Independently deployable where appropriate
+The workflow included:
 
-The project avoids unnecessary enterprise technologies and complexity. The architecture focuses on demonstrating the required full-stack engineering capabilities through one coherent system.
+1. Requirements and architecture
+2. Backend foundation
+3. Equipment management
+4. Engineer and work order management
+5. Angular frontend development
+6. Go analytics service
+7. Advanced work order and document functionality
+8. Analytics and risk engine
+9. Authentication and RBAC
+10. Engineering quality and integration testing
+11. Docker and CI/CD
+12. Production deployment and monitoring
+
+Each phase was tested and verified before progressing to the next stage.
 
 ## Local Development
 
-Local environment setup is documented in:
+Clone the repository and configure the required environment variables.
+
+Backend:
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+Frontend:
+
+```bash
+cd frontend/fieldops-frontend
+npm install
+npm start
+```
+
+Analytics service:
+
+```bash
+cd analytics
+go run .
+```
+
+The project-specific environment setup is documented in:
 
 ```text
 docs/deployment/environment-setup.md
 ```
 
-## API Documentation
+## Engineering Practices
 
-API documentation will be maintained through:
+FieldOps focuses on practical software engineering principles:
 
-```text
-api/openapi.yaml
-```
+- Layered architecture
+- Separation of concerns
+- RESTful API design
+- DTO-based API contracts
+- Database migrations
+- Automated testing
+- Integration testing
+- Authentication and authorization
+- Service-to-service communication
+- Containerization
+- CI automation
+- Production health monitoring
+- Structured logging
+- Regression testing
+- Incremental development
 
-Postman collections will be maintained under:
-
-```text
-api/postman/
-```
+The project intentionally avoids unnecessary complexity and focuses on demonstrating how a coherent full-stack system can be designed, implemented, tested, deployed, and maintained.
 
 ## Project Status
 
-Current phase:
+**Production-ready portfolio project**
 
-**Phase 1 - Project Foundation**
+Current implementation includes:
 
-The project is currently establishing:
+- Full-stack Angular application
+- Spring Boot backend
+- PostgreSQL database
+- Go analytics service
+- JWT authentication
+- Role-based access control
+- Equipment management
+- Engineer management
+- Work order management
+- Dashboard
+- Document management
+- Equipment risk analytics
+- Automated testing
+- Docker
+- GitHub Actions CI
+- Cloud deployment
+- HTTPS
+- Production logging
+- Health monitoring
+- Production E2E verification
 
-- Repository structure
-- Requirements
-- Architecture documentation
-- Database design
-- Development environment
-- Spring Boot foundation
-- Angular foundation
-- Go foundation
-- CI foundation
+## Author
+
+**Jacob Isaac**
+B.Tech Computer Science and Engineering
+Amrita Vishwa Vidyapeetham
+
+- GitHub: https://github.com/JACOBISAAC04
+- LinkedIn: https://www.linkedin.com/in/jacob-isaac-137426291/
