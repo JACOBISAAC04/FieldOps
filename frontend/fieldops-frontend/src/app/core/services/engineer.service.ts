@@ -13,8 +13,8 @@ import { environment } from '../../../environments/environment';
 })
 export class EngineerService {
 
-  private readonly apiUrl = environment.apiUrl + '/engineers';
-  private readonly usersApiUrl = environment.apiUrl + '/users';
+  private readonly apiUrl = environment.apiUrl + '/api/engineers';
+  private readonly usersApiUrl = environment.apiUrl + '/api/users';
 
   constructor(private http: HttpClient) {}
 

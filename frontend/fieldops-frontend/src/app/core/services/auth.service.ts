@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   private http = inject(HttpClient);
 
-  private readonly apiUrl = environment.apiUrl + '/auth';
+  private readonly apiUrl = environment.apiUrl + '/api/auth';
   private readonly tokenKey = 'fieldops_token';
   private readonly userKey = 'fieldops_user';
 

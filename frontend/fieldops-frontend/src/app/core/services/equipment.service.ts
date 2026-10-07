@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class EquipmentService {
   private http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl + '/equipment';
+  private readonly apiUrl = environment.apiUrl + '/api/equipment';
 
   getAllEquipment(filters?: {
     status?: string;

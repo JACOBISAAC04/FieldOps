@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 })
 export class WorkOrderService {
 
-  private readonly apiUrl = environment.apiUrl + '/work-orders';
+  private readonly apiUrl = environment.apiUrl + '/api/work-orders';
 
   constructor(private http: HttpClient) {}
 

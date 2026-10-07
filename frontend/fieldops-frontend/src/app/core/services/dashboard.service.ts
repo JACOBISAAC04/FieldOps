@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 })
 export class DashboardService {
 
-  private readonly apiUrl = environment.apiUrl + '/dashboard';
+  private readonly apiUrl = environment.apiUrl + '/api/dashboard';
 
   constructor(private http: HttpClient) {}
 

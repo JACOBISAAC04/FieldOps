@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class DocumentService {
   private http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl + '/documents';
+  private readonly apiUrl = environment.apiUrl + '/api/documents';
 
   uploadForEquipment(
     equipmentId: number,
