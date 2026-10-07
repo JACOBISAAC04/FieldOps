@@ -45,7 +45,7 @@ public class ProductionSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/health").permitAll()
+                .requestMatchers("/health", "/actuator/health").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
 
                 .requestMatchers("/api/users/**")

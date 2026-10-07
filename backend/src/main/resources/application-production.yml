@@ -33,3 +33,11 @@ logging:
     com.zaxxer.hikari: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
