@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fieldops
+    username: postgres
+    password: ${SPRING_DATASOURCE_PASSWORD}

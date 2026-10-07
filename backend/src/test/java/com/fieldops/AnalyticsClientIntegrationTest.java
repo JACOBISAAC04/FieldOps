@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles("production")
+@ActiveProfiles("test")
 class AnalyticsClientIntegrationTest {
 
     @Autowired

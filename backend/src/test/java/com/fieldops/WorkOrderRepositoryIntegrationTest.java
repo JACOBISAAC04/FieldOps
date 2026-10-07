@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles("production")
+@ActiveProfiles("test")
 class WorkOrderRepositoryIntegrationTest {
 
     @Autowired
