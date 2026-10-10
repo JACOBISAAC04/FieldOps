@@ -33,6 +33,7 @@ jobs:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: fieldops_ci_password
       FIELDOPS_JWT_SECRET: fieldops-ci-secret-key-12345678901234567890
+      FIELDOPS_CORS_ORIGINS: http://localhost:4200
       ANALYTICS_SERVICE_URL: http://localhost:8081
       DOCUMENT_STORAGE_PATH: /tmp/fieldops-documents
 
